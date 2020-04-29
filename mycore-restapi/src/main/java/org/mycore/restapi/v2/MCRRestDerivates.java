@@ -143,6 +143,10 @@ public class MCRRestDerivates {
                         MCRMetaDefaultListXMLWriter.PARAM_XMLWRAPPER, "derobjects"))
                 })
             .lastModified(lastModified)
+            .link(uriInfo.getBaseUriBuilder().path("objects/" + mcrId.toString()+"/derivates").build(), "self")
+            .link(uriInfo.getBaseUri(), "base")
+            .link(uriInfo.getBaseUriBuilder().path("objects/" + mcrId.toString()).build(), "mcr:mycoreobject")
+            .link(uriInfo.getBaseUriBuilder().path("objects/" + mcrId.toString()+"/derivates").build(), "mcr:maindoc")
             .build();
     }
 
@@ -175,13 +179,19 @@ public class MCRRestDerivates {
         if (cachedResponse.isPresent()) {
             return cachedResponse.get();
         }
+        MCRDerivate mcrDer = MCRMetadataManager.retrieveMCRDerivate(derid);
         MCRContent mcrContent = MCRXMLMetadataManager.instance().retrieveContent(derid);
         return Response.ok()
-            .entity(mcrContent,
-                new Annotation[] { MCRParams.Factory
-                    .get(MCRParam.Factory.get(MCRContentAbstractWriter.PARAM_OBJECTTYPE, derid.getTypeId())) })
-            .lastModified(lastModified)
-            .build();
+                .entity(mcrContent, new Annotation[] { MCRParams.Factory
+                          .get(MCRParam.Factory.get(MCRContentAbstractWriter.PARAM_OBJECTTYPE, derid.getTypeId())) })
+                .lastModified(lastModified)
+                .link(uriInfo.getBaseUriBuilder().path("objects/" + mcrId.toString() + "/derivates/" + derid.toString())
+                        .build(), "self")
+                .link(uriInfo.getBaseUri(), "base")
+                .link(uriInfo.getBaseUriBuilder().path("objects/" + mcrId.toString()).build(), "mcr:mycoreobject")
+                .link(uriInfo.getBaseUriBuilder().path("objects/" + mcrId.toString() + "/derivates/" + derid.toString()
+                        + "/contents/" + mcrDer.getDerivate().getInternals().getMainDoc()).build(), "mcr:maindoc")
+                .build();
     }
 
     @PUT

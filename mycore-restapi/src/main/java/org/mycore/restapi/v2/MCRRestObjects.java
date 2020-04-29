@@ -56,6 +56,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -75,6 +76,7 @@ import org.mycore.datamodel.metadata.MCRMetadataManager;
 import org.mycore.datamodel.metadata.MCRObject;
 import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.datamodel.niofs.MCRPath;
+import org.mycore.frontend.MCRFrontendUtil;
 import org.mycore.frontend.jersey.MCRCacheControl;
 import org.mycore.media.services.MCRThumbnailGenerator;
 import org.mycore.restapi.annotations.MCRParam;
@@ -110,6 +112,9 @@ public class MCRRestObjects {
 
     @Context
     ServletContext context;
+    
+    @Context
+    UriInfo uriInfo;
 
     public static final List<MCRThumbnailGenerator> THUMBNAIL_GENERATORS = Collections
         .unmodifiableList(MCRConfiguration2
@@ -145,6 +150,8 @@ public class MCRRestObjects {
         Type type = TypeUtils.parameterize(idDates.getClass(), t);
         return Response.ok(new GenericEntity<List<? extends MCRObjectIDDate>>(idDates, type))
             .lastModified(lastModified)
+            .link(uriInfo.getBaseUriBuilder().path("objects").build(), "self")
+            .link(uriInfo.getBaseUri(), "base")
             .build();
     }
 
@@ -168,11 +175,17 @@ public class MCRRestObjects {
             return cachedResponse.get();
         }
         MCRContent mcrContent = MCRXMLMetadataManager.instance().retrieveContent(id);
+        String frontpageURL = MCRFrontendUtil.getBaseURL()
+                + MCRConfiguration2.getStringOrThrow("MCR.RestAPI.V2.Objects.Frontpage.URL.path")
+                    .replace("{mcrid}", id.toString());
         return Response.ok()
             .entity(mcrContent,
                 new Annotation[] { MCRParams.Factory
                     .get(MCRParam.Factory.get(MCRContentAbstractWriter.PARAM_OBJECTTYPE, id.getTypeId())) })
             .lastModified(lastModified)
+            .link(uriInfo.getBaseUriBuilder().path("objects/"+id.toString()).build(), "self")
+            .link(uriInfo.getBaseUri(), "base")
+            .link(frontpageURL, "mcr:frontpage")
             .build();
     }
 
