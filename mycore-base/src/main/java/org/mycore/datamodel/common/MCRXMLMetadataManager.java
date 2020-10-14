@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,14 +52,14 @@ import org.mycore.common.config.MCRConfigurationException;
 import org.mycore.common.content.MCRByteContent;
 import org.mycore.common.content.MCRContent;
 import org.mycore.common.content.MCRJDOMContent;
+import org.mycore.datamodel.ifs2.MCRMetadata;
 import org.mycore.datamodel.ifs2.MCRMetadataStore;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion;
+import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
 import org.mycore.datamodel.ifs2.MCRObjectIDFileSystemDate;
 import org.mycore.datamodel.ifs2.MCRStore;
 import org.mycore.datamodel.ifs2.MCRStoreCenter;
 import org.mycore.datamodel.ifs2.MCRStoreManager;
-import org.mycore.datamodel.ifs2.MCRStoredMetadata;
-import org.mycore.datamodel.ifs2.MCRVersionedMetadata;
 import org.mycore.datamodel.ifs2.MCRVersioningMetadataStore;
 import org.mycore.datamodel.metadata.MCRObject;
 import org.mycore.datamodel.metadata.MCRObjectID;
@@ -113,7 +114,7 @@ public class MCRXMLMetadataManager {
     /**
      * The default IFS2 Metadata store class to use, set by MCR.Metadata.Store.DefaultClass
      */
-    private Class defaultClass;
+    private Class<? extends MCRMetadataStore<?>> defaultClass;
 
     /**
      * The default subdirectory slot layout for IFS2 metadata store, is 4-2-2 for 8-digit IDs,
@@ -236,7 +237,7 @@ public class MCRXMLMetadataManager {
      *
      * @param base the MCRObjectID base, e.g. DocPortal_document
      */
-    public MCRMetadataStore getStore(String base) {
+    public MCRMetadataStore<?> getStore(String base) {
         String[] split = base.split("_");
         return getStore(split[0], split[1], false);
     }
@@ -249,7 +250,7 @@ public class MCRXMLMetadataManager {
      *                 is thrown.
      * @return the metadata store
      */
-    public MCRMetadataStore getStore(String base, boolean readOnly) {
+    public MCRMetadataStore<?> getStore(String base, boolean readOnly) {
         String[] split = base.split("_");
         return getStore(split[0], split[1], readOnly);
     }
@@ -260,7 +261,7 @@ public class MCRXMLMetadataManager {
      * @param mcrid the mycore object identifier
      * @return the metadata store
      */
-    public MCRMetadataStore getStore(MCRObjectID mcrid) {
+    public MCRMetadataStore<?> getStore(MCRObjectID mcrid) {
         return getStore(mcrid.getProjectId(), mcrid.getTypeId(), false);
     }
 
@@ -272,7 +273,7 @@ public class MCRXMLMetadataManager {
      *                 is thrown.
      * @return the metadata store
      */
-    public MCRMetadataStore getStore(MCRObjectID mcrid, boolean readOnly) {
+    public MCRMetadataStore<?> getStore(MCRObjectID mcrid, boolean readOnly) {
         return getStore(mcrid.getProjectId(), mcrid.getTypeId(), readOnly);
     }
 
@@ -283,7 +284,7 @@ public class MCRXMLMetadataManager {
      * @param type the object type, e.g. document
      * @return the metadata store
      */
-    public MCRMetadataStore getStore(String project, String type) {
+    public MCRMetadataStore<?> getStore(String project, String type) {
         return getStore(project, type, false);
     }
 
@@ -295,7 +296,7 @@ public class MCRXMLMetadataManager {
      * @param readOnly if readOnly, this method will throw an exception if the store does not exist's yet
      * @return the metadata store
      */
-    public MCRMetadataStore getStore(String project, String type, boolean readOnly) {
+    public MCRMetadataStore<?> getStore(String project, String type, boolean readOnly) {
         String projectType = getStoryKey(project, type);
         String prefix = "MCR.IFS2.Store." + projectType + ".";
         String forceXML = MCRConfiguration2.getString(prefix + "ForceXML").orElse(null);
@@ -314,7 +315,7 @@ public class MCRXMLMetadataManager {
                 }
             }
         }
-        MCRMetadataStore store = MCRStoreManager.getStore(projectType);
+        MCRMetadataStore<?> store = MCRStoreManager.getStore(projectType);
         if (store == null) {
             throw new MCRPersistenceException(
                 new MessageFormat("Metadata store for project {0} and object type {1} is unconfigured.", Locale.ROOT)
@@ -323,7 +324,6 @@ public class MCRXMLMetadataManager {
         return store;
     }
 
-    @SuppressWarnings("unchecked")
     private void setupStore(String project, String objectType, String configPrefix, boolean readOnly)
         throws ReflectiveOperationException {
         String baseID = getStoryKey(project, objectType);
@@ -396,7 +396,7 @@ public class MCRXMLMetadataManager {
      * @return the stored metadata as IFS2 object
      * @throws MCRPersistenceException the object couldn't be created due persistence problems
      */
-    public MCRStoredMetadata create(MCRObjectID mcrid, Document xml, Date lastModified) throws MCRPersistenceException {
+    public MCRMetadata create(MCRObjectID mcrid, Document xml, Date lastModified) throws MCRPersistenceException {
         return create(mcrid, new MCRJDOMContent(xml), lastModified);
     }
 
@@ -409,7 +409,7 @@ public class MCRXMLMetadataManager {
      * @return the stored metadata as IFS2 object
      * @throws MCRPersistenceException the object couldn't be created due persistence problems
      */
-    public MCRStoredMetadata create(MCRObjectID mcrid, byte[] xml, Date lastModified) throws MCRPersistenceException {
+    public MCRMetadata create(MCRObjectID mcrid, byte[] xml, Date lastModified) throws MCRPersistenceException {
         return create(mcrid, new MCRByteContent(xml, lastModified.getTime()), lastModified);
     }
 
@@ -422,10 +422,10 @@ public class MCRXMLMetadataManager {
      * @return the stored metadata as IFS2 object
      * @throws MCRPersistenceException the object couldn't be created due persistence problems
      */
-    public MCRStoredMetadata create(MCRObjectID mcrid, MCRContent xml, Date lastModified)
+    public MCRMetadata create(MCRObjectID mcrid, MCRContent xml, Date lastModified)
         throws MCRPersistenceException {
         try {
-            MCRStoredMetadata sm = getStore(mcrid, false).create(xml, mcrid.getNumberAsInteger());
+            MCRMetadata sm = getStore(mcrid, false).create(mcrid.getNumberAsInteger(), xml);
             sm.setLastModified(lastModified);
             MCRConfigurationBase.systemModified();
             return sm;
@@ -456,7 +456,7 @@ public class MCRXMLMetadataManager {
      * @return the stored metadata as IFS2 object
      * @throws MCRPersistenceException the object couldn't be updated due persistence problems
      */
-    public MCRStoredMetadata update(MCRObjectID mcrid, Document xml, Date lastModified) throws MCRPersistenceException {
+    public MCRMetadata update(MCRObjectID mcrid, Document xml, Date lastModified) throws MCRPersistenceException {
         return update(mcrid, new MCRJDOMContent(xml), lastModified);
     }
 
@@ -469,7 +469,7 @@ public class MCRXMLMetadataManager {
      * @return the stored metadata as IFS2 object
      * @throws MCRPersistenceException the object couldn't be created or updated due persistence problems
      */
-    public MCRStoredMetadata createOrUpdate(MCRObjectID mcrid, Document xml, Date lastModified)
+    public MCRMetadata createOrUpdate(MCRObjectID mcrid, Document xml, Date lastModified)
         throws MCRPersistenceException {
         if (exists(mcrid)) {
             return update(mcrid, xml, lastModified);
@@ -486,7 +486,7 @@ public class MCRXMLMetadataManager {
      * @param lastModified the date of last modification to set
      * @return the stored metadata as IFS2 object
      */
-    public MCRStoredMetadata update(MCRObjectID mcrid, byte[] xml, Date lastModified) throws MCRPersistenceException {
+    public MCRMetadata update(MCRObjectID mcrid, byte[] xml, Date lastModified) throws MCRPersistenceException {
         return update(mcrid, new MCRByteContent(xml, lastModified.getTime()), lastModified);
     }
 
@@ -498,13 +498,13 @@ public class MCRXMLMetadataManager {
      * @param lastModified the date of last modification to set
      * @return the stored metadata as IFS2 object
      */
-    public MCRStoredMetadata update(MCRObjectID mcrid, MCRContent xml, Date lastModified)
+    public MCRMetadata update(MCRObjectID mcrid, MCRContent xml, Date lastModified)
         throws MCRPersistenceException {
         if (!exists(mcrid)) {
             throw new MCRPersistenceException("Object to update does not exist: " + mcrid);
         }
         try {
-            MCRStoredMetadata sm = getStore(mcrid, false).retrieve(mcrid.getNumberAsInteger());
+            MCRMetadata sm = getStore(mcrid, false).retrieve(mcrid.getNumberAsInteger());
             sm.update(xml);
             sm.setLastModified(lastModified);
             MCRConfigurationBase.systemModified();
@@ -538,11 +538,11 @@ public class MCRXMLMetadataManager {
 
     public MCRContent retrieveContent(MCRObjectID mcrid) throws IOException {
         MCRContent metadata;
-        MCRStoredMetadata storedMetadata = retrieveStoredMetadata(mcrid);
-        if (storedMetadata == null || storedMetadata.isDeleted()) {
+        MCRMetadata storedMetadata = retrieveStoredMetadata(mcrid);
+        if (storedMetadata == null || storedMetadata.getVersion().getState() == MCRMetadataVersionState.DELETED) {
             return null;
         }
-        metadata = storedMetadata.getMetadata();
+        metadata = storedMetadata.read();
         return metadata;
     }
 
@@ -560,7 +560,7 @@ public class MCRXMLMetadataManager {
         LOGGER.info("Getting object {} in revision {}", mcrid, revision);
         MCRMetadataVersion version = getMetadataVersion(mcrid, revision);
         if (version != null) {
-            return version.retrieve();
+            return version.getMetadata().read();
         }
         return null;
     }
@@ -579,11 +579,11 @@ public class MCRXMLMetadataManager {
      * @throws IOException version metadata couldn't be retrieved due an i/o error
      */
     private MCRMetadataVersion getMetadataVersion(MCRObjectID mcrId, long rev) throws IOException {
-        MCRVersionedMetadata versionedMetaData = getVersionedMetaData(mcrId);
+        MCRMetadata versionedMetaData = getVersionedMetaData(mcrId);
         if (versionedMetaData == null) {
             return null;
         }
-        return versionedMetaData.getRevision(rev);
+        return versionedMetaData.getVersion(rev);
     }
 
     /**
@@ -597,18 +597,14 @@ public class MCRXMLMetadataManager {
      *         store doesn't support versioning
      */
     public List<MCRMetadataVersion> listRevisions(MCRObjectID id) throws IOException {
-        MCRVersionedMetadata vm = getVersionedMetaData(id);
-        if (vm == null) {
-            return null;
-        }
-        return vm.listVersions();
+        return getStore(id, true).getMetadataVersions(id.getNumberAsInteger());
     }
 
-    public MCRVersionedMetadata getVersionedMetaData(MCRObjectID id) throws IOException {
+    public MCRMetadata getVersionedMetaData(MCRObjectID id) throws IOException {
         if (id == null) {
             return null;
         }
-        MCRMetadataStore metadataStore = getStore(id, true);
+        MCRMetadataStore<?> metadataStore = getStore(id, true);
         if (!(metadataStore instanceof MCRVersioningMetadataStore)) {
             return null;
         }
@@ -621,7 +617,7 @@ public class MCRXMLMetadataManager {
      *
      * @param mcrid the MCRObjectID
      */
-    private MCRStoredMetadata retrieveStoredMetadata(MCRObjectID mcrid) throws IOException {
+    private MCRMetadata retrieveStoredMetadata(MCRObjectID mcrid) throws IOException {
         return getStore(mcrid, true).retrieve(mcrid.getNumberAsInteger());
     }
 
@@ -638,7 +634,7 @@ public class MCRXMLMetadataManager {
      * @return the highest stored ID number as a String
      */
     public int getHighestStoredID(String project, String type) {
-        MCRMetadataStore store;
+        MCRMetadataStore<?> store;
         try {
             store = getStore(project, type, true);
         } catch (MCRPersistenceException persistenceException) {
@@ -660,7 +656,7 @@ public class MCRXMLMetadataManager {
             if (mcrid == null) {
                 return false;
             }
-            MCRMetadataStore store;
+            MCRMetadataStore<?> store;
             try {
                 store = getStore(mcrid, true);
             } catch (MCRPersistenceException persistenceException) {
@@ -679,7 +675,7 @@ public class MCRXMLMetadataManager {
      * @param base the MCRObjectID base, e.g. DocPortal_document
      */
     public List<String> listIDsForBase(String base) {
-        MCRMetadataStore store;
+        MCRMetadataStore<?> store;
         try {
             store = getStore(base, true);
         } catch (MCRPersistenceException e) {
@@ -723,15 +719,13 @@ public class MCRXMLMetadataManager {
      * @return list of all mycore identifiers found in the metadata store
      */
     public List<String> listIDs() {
-        try (Stream<Path> streamBasePath = list(basePath)) {
-            return streamBasePath.flatMap(projectPath -> {
-                final String project = projectPath.getFileName().toString();
-                return list(projectPath).flatMap(typePath -> {
-                    final String type = typePath.getFileName().toString();
-                    final String base = getStoryKey(project, type);
-                    return listIDsForBase(base).stream();
+        try (Stream<String> streamIDs = StreamSupport.stream(createdStores.spliterator(), true)) {
+            return streamIDs.flatMap(projectID -> {
+                final MCRMetadataStore<?> createdStore = this.getStore(projectID, true);
+                return createdStore.getStoredIDs().boxed().map(id -> {
+                    return projectID + "_" + createdStore.createIDWithLeadingZeros(id);
                 });
-            }).collect(Collectors.toList());
+            }).collect(Collectors.toUnmodifiableList());
         }
     }
 
@@ -804,7 +798,7 @@ public class MCRXMLMetadataManager {
     public List<MCRObjectIDDate> retrieveObjectDates(List<String> ids) throws IOException {
         List<MCRObjectIDDate> objidlist = new ArrayList<>(ids.size());
         for (String id : ids) {
-            MCRStoredMetadata sm = this.retrieveStoredMetadata(MCRObjectID.getInstance(id));
+            MCRMetadata sm = this.retrieveStoredMetadata(MCRObjectID.getInstance(id));
             objidlist.add(new MCRObjectIDFileSystemDate(sm, id));
         }
         return objidlist;
@@ -823,8 +817,8 @@ public class MCRXMLMetadataManager {
      * @throws IOException thrown by {@link MCRMetadataStore#retrieve(int)}
      */
     public long getLastModified(MCRObjectID id) throws IOException {
-        MCRMetadataStore store = getStore(id, true);
-        MCRStoredMetadata metadata = store.retrieve(id.getNumberAsInteger());
+        MCRMetadataStore<?> store = getStore(id, true);
+        MCRMetadata metadata = store.retrieve(id.getNumberAsInteger());
         if (metadata != null) {
             return metadata.getLastModified().getTime();
         }

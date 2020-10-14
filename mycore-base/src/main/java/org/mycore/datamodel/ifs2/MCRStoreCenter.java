@@ -68,6 +68,7 @@ public class MCRStoreCenter {
      * @param id - The id of the to retrieved store
      * @return The retrieved store or null if not exists
      */
+    @SuppressWarnings("unchecked")
     public <T extends MCRStore> T getStore(String id) {
         return (T) storeHeap.get(id);
     }
@@ -75,6 +76,7 @@ public class MCRStoreCenter {
     /**
      * @return a Stream of all {@link MCRStore}s that are an instance of <code>&lt;T&gt;</code>
      */
+    @SuppressWarnings("unchecked")
     public <T extends MCRStore> Stream<T> getCurrentStores(Class<T> sClass) {
         return storeHeap.values()
             .stream()

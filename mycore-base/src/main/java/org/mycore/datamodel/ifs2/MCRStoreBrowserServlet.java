@@ -70,7 +70,7 @@ class MCRStoreBrowserRequest {
     private List<String> pathElements = new ArrayList<>();
 
     /** The store thats contents should be browsed */
-    private MCRMetadataStore store;
+    private MCRMetadataStore<?> store;
 
     MCRStoreBrowserRequest(String pathInfo) throws Exception {
         StringTokenizer tokenizer = new StringTokenizer(pathInfo, "/");

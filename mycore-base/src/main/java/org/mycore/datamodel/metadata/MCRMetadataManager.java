@@ -305,7 +305,7 @@ public final class MCRMetadataManager {
         }
         // exist the object?
         if (MCRMetadataManager.exists(mcrObject.getId())) {
-            throw new MCRPersistenceException("The object " + mcrObject.getId() + " allready exists, nothing done.");
+            throw new MCRPersistenceException("The object " + mcrObject.getId() + " already exists, nothing done.");
         }
 
         // create this object in datastore

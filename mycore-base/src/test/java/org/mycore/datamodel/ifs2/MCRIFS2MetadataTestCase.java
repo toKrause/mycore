@@ -19,17 +19,17 @@
 package org.mycore.datamodel.ifs2;
 
 public class MCRIFS2MetadataTestCase extends MCRIFS2TestCase {
-    private MCRMetadataStore metaDataStore;
+    private MCRXMLMetadataStore metaDataStore;
 
     protected void createStore() throws Exception {
-        setMetaDataStore(MCRStoreManager.createStore(STORE_ID, MCRMetadataStore.class));
+        setMetaDataStore(MCRStoreManager.createStore(STORE_ID, MCRXMLMetadataStore.class));
     }
 
-    public void setMetaDataStore(MCRMetadataStore metaDataStore) {
+    public void setMetaDataStore(MCRXMLMetadataStore metaDataStore) {
         this.metaDataStore = metaDataStore;
     }
 
-    public MCRMetadataStore getMetaDataStore() {
+    public MCRXMLMetadataStore getMetaDataStore() {
         return metaDataStore;
     }
 

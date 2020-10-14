@@ -81,7 +81,6 @@ public class MCRDirectory extends MCRStoredNode {
         return new MCRFile(this, name);
     }
 
-    @SuppressWarnings("unchecked")
     private Element getChildData(String name) {
         for (Element child : readData(Element::getChildren)) {
             if (name.equals(child.getAttributeValue("name"))) {
@@ -130,7 +129,6 @@ public class MCRDirectory extends MCRStoredNode {
      * Repairs additional metadata of this directory and all its children
      */
     @Override
-    @SuppressWarnings("unchecked")
     void repairMetadata() throws IOException {
         writeData(e -> {
             e.setName("dir");

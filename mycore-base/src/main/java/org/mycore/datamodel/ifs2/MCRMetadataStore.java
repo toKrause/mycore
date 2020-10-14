@@ -18,19 +18,20 @@
 
 package org.mycore.datamodel.ifs2;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.JDOMException;
-import org.mycore.common.MCRException;
+import org.mycore.common.MCRPersistenceException;
+import org.mycore.common.MCRUsageException;
 import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.common.content.MCRContent;
 
 /**
+ * TODO rewrite
+ * 
  * Stores XML metadata documents (or optionally any other BLOB data) in a
  * persistent filesystem structure
  * 
@@ -43,15 +44,15 @@ import org.mycore.common.content.MCRContent;
  * 
  * @author Frank Lützenkirchen
  */
-public class MCRMetadataStore extends MCRStore {
+public abstract class MCRMetadataStore<T> extends MCRStore {
 
-    public static final Logger LOGGER = LogManager.getLogger();
+    protected static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * If true (which is default), store will enforce it gets
      * XML to store, otherwise any binary content can be stored here.
      * 
-     * Override with MCR.IFS2.Store.&lt;ObjectType&gt;.ForceXML=true|false
+     * Override with {@code MCR.IFS2.Store.<ObjectType>.ForceXML=true|false}
      */
     protected boolean forceXML = true;
 
@@ -94,46 +95,30 @@ public class MCRMetadataStore extends MCRStore {
         }
     }
 
-    protected boolean shouldForceXML() {
-        return forceXML;
-    }
-
     /**
      * Stores a newly created document, using the next free ID.
      * 
-     * @param xml
-     *            the XML document to be stored
+     * @param content
+     *            the content to be stored
      * @return the stored metadata object
      */
-    public MCRStoredMetadata create(MCRContent xml) throws IOException, JDOMException {
-        int id = getNextFreeID();
-        return create(xml, id);
+    public MCRMetadata create(MCRContent content) throws MCRPersistenceException {
+        return create(getNextFreeID(), content);
     }
 
     /**
      * Stores a newly created document under the given ID.
      * 
-     * @param xml
-     *            the XML document to be stored
+     * @param content
+     *            the content to be stored
      * @param id
      *            the ID under which the document should be stored
      * @return the stored metadata object
      */
-    public MCRStoredMetadata create(MCRContent xml, int id) throws IOException, JDOMException {
-        if (id <= 0) {
-            throw new MCRException("ID of metadata object must be a positive integer");
-        }
-        Path path = getSlot(id);
-        if (Files.exists(path)) {
-            String msg = "Metadata object with ID " + id + " already exists in store";
-            throw new MCRException(msg);
-        }
-        if (!Files.exists(path.getParent())) {
-            Files.createDirectories(path.getParent());
-        }
-        MCRStoredMetadata meta = buildMetadataObject(path, id);
-        meta.create(xml);
-        return meta;
+    public MCRMetadata create(int id, MCRContent content) throws MCRPersistenceException {
+        MCRMetadata metadata = new MCRMetadata(this, id);
+        metadata.create(content);
+        return metadata;
     }
 
     /**
@@ -144,24 +129,97 @@ public class MCRMetadataStore extends MCRStore {
      * @return the metadata stored under that ID, or null when there is no such
      *         metadata object
      */
-    public MCRStoredMetadata retrieve(int id) throws IOException {
-        Path path = getSlot(id);
-        if (!Files.exists(path)) {
-            return null;
+    public MCRMetadata retrieve(int id) throws MCRPersistenceException {
+        if (exists(id)) {
+            MCRMetadata metadata = new MCRMetadata(this, id);
+            metadata.read();
+            return metadata;
         } else {
-            return buildMetadataObject(path, id);
+            return null;
         }
     }
 
+    public MCRMetadata update(int id, MCRContent content) throws MCRPersistenceException {
+        MCRMetadata metadata = new MCRMetadata(this, id);
+        metadata.update(content);
+        return metadata;
+    }
+
+    public void delete(int id) throws MCRPersistenceException {
+        new MCRMetadata(this, id).delete();
+    }
+
+    @Override
+    public boolean exists(final int id) throws MCRPersistenceException {
+        return exists(new MCRMetadata(this, id));
+    }
+
+    public abstract boolean exists(MCRMetadata metadata) throws MCRPersistenceException;
+
     /**
-     * Builds a new stored metadata object in this store
+     * Creates an object in the underlying repository system.
      * 
-     * @param fo
-     *            the FileObject that stores the data
-     * @param id
-     *            the ID of the metadata object
+     * This implementation is a stub for input verification, please {@code @Override} this method with your store-specific implementation and call {@code super.createContent(metadata, content)} to use these checks. 
+     * @param metadata
+     * @param content
+     * @throws MCRPersistenceException
+     * @throws MCRUsageException
      */
-    protected MCRStoredMetadata buildMetadataObject(Path fo, int id) {
-        return new MCRStoredMetadata(this, fo, id, forceDocType);
+    protected abstract void createContent(MCRMetadata metadata, MCRContent content)
+        throws MCRPersistenceException, MCRUsageException;
+
+    protected abstract MCRContent readContent(MCRMetadata metadata) throws MCRPersistenceException, MCRUsageException;
+
+    protected abstract void updateContent(MCRMetadata metadata, MCRContent content) throws MCRPersistenceException;
+
+    protected abstract void deleteContent(MCRMetadata metadata) throws MCRPersistenceException;
+
+    public abstract List<MCRMetadataVersion> getMetadataVersions(int id) throws MCRPersistenceException;
+
+    protected abstract T getRepository() throws MCRPersistenceException;
+
+    public abstract void verify() throws MCRPersistenceException, MCRUsageException;
+
+    public Date getLastModified(int id) throws MCRPersistenceException {
+        return getLastModified(new MCRMetadata(this, id));
+    }
+
+    public abstract Date getLastModified(MCRMetadata metadata) throws MCRPersistenceException;
+
+    protected abstract void setLastModified(MCRMetadata mcrMetadata, Date date) throws MCRUsageException;
+
+    public boolean shouldForceXML() {
+        return forceXML;
+    }
+
+    public String getDocType() {
+        return forceDocType;
+    }
+
+    public MCRMetadataVersion getMetadataVersion(int id, long revision) throws MCRPersistenceException {
+        return getMetadataVersions(id).get((int) (revision - 1));
+    }
+
+    public MCRMetadataVersion getMetadataVersionFirst(int id) throws MCRPersistenceException {
+        List<MCRMetadataVersion> list = getMetadataVersions(id);
+        if (list.size() < 1) {
+            return null;
+        } else {
+            return list.get(0);
+        }
+    }
+
+    public MCRMetadataVersion getMetadataVersionLast(int id) throws MCRPersistenceException {
+        List<MCRMetadataVersion> list = getMetadataVersions(id);
+        if (list.size() < 1) {
+            return null;
+        } else {
+            return list.get(list.size() - 1);
+        }
+    }
+
+    protected final void checkIDPermitted(int id) throws MCRUsageException {
+        if (id < 1)
+            throw new MCRUsageException("ID " + id + " must be >= 1!");
     }
 }

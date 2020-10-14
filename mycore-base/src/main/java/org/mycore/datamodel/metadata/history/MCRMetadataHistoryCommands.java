@@ -47,9 +47,10 @@ import org.mycore.common.MCRSessionMgr;
 import org.mycore.common.MCRSystemUserInformation;
 import org.mycore.datamodel.common.MCRCreatorCache;
 import org.mycore.datamodel.common.MCRXMLMetadataManager;
+import org.mycore.datamodel.ifs2.MCRMetadata;
 import org.mycore.datamodel.ifs2.MCRMetadataStore;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion;
-import org.mycore.datamodel.ifs2.MCRVersionedMetadata;
+import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
 import org.mycore.datamodel.ifs2.MCRVersioningMetadataStore;
 import org.mycore.datamodel.metadata.MCRDerivate;
 import org.mycore.datamodel.metadata.MCRMetadataManager;
@@ -115,7 +116,7 @@ public class MCRMetadataHistoryCommands {
     @MCRCommand(syntax = "build metadata history of base {0}",
         help = "build metadata history of all objects with base id {0}")
     public static List<String> buildHistory(String baseId) {
-        MCRMetadataStore store = MCRXMLMetadataManager.instance().getStore(baseId, true);
+        MCRMetadataStore<?> store = MCRXMLMetadataManager.instance().getStore(baseId, true);
         if (store instanceof MCRVersioningMetadataStore) {
             LogManager.getLogger().info("Verify SVN history of {}", baseId);
             ((MCRVersioningMetadataStore) store).verify();
@@ -163,11 +164,11 @@ public class MCRMetadataHistoryCommands {
     private static Stream<MCRMetaHistoryItem> buildDerivateHistory(MCRObjectID derId) {
         try {
             List<MCRMetadataVersion> versions = Collections.emptyList();
-            MCRMetadataStore store = MCRXMLMetadataManager.instance().getStore(derId, true);
+            MCRMetadataStore<?> store = MCRXMLMetadataManager.instance().getStore(derId, true);
             if (store instanceof MCRVersioningMetadataStore) {
-                MCRVersionedMetadata versionedMetadata = ((MCRVersioningMetadataStore) store)
+                MCRMetadata versionedMetadata = ((MCRVersioningMetadataStore) store)
                     .retrieve(derId.getNumberAsInteger());
-                versions = versionedMetadata.listVersions();
+                versions = versionedMetadata.getVersions();
             }
             if (versions.isEmpty()) {
                 return buildSimpleDerivateHistory(derId);
@@ -183,11 +184,11 @@ public class MCRMetadataHistoryCommands {
     private static Stream<MCRMetaHistoryItem> buildObjectHistory(MCRObjectID objId) {
         try {
             List<MCRMetadataVersion> versions = Collections.emptyList();
-            MCRMetadataStore store = MCRXMLMetadataManager.instance().getStore(objId, true);
+            MCRMetadataStore<?> store = MCRXMLMetadataManager.instance().getStore(objId, true);
             if (store instanceof MCRVersioningMetadataStore) {
-                MCRVersionedMetadata versionedMetadata = ((MCRVersioningMetadataStore) store)
+                MCRMetadata versionedMetadata = ((MCRVersioningMetadataStore) store)
                     .retrieve(objId.getNumberAsInteger());
-                versions = versionedMetadata.listVersions();
+                versions = versionedMetadata.getVersions();
             }
             if (versions.isEmpty()) {
                 return buildSimpleObjectHistory(objId);
@@ -262,7 +263,7 @@ public class MCRMetadataHistoryCommands {
         for (MCRMetadataVersion version : versions) {
             String user = version.getUser();
             Instant revDate = version.getDate().toInstant();
-            if (version.getType() == MCRMetadataVersion.DELETED) {
+            if (version.getState() == MCRMetadataVersionState.DELETED) {
                 if (exist) {
                     items.add(delete(derId, user, revDate));
                     exist = false;
@@ -270,13 +271,13 @@ public class MCRMetadataHistoryCommands {
             } else {
                 //created or updated
                 int timeOffset = 0;
-                if (version.getType() == MCRMetadataVersion.CREATED && !exist) {
+                if (version.getState() == MCRMetadataVersionState.CREATED && !exist) {
                     items.add(create(derId, user, revDate));
                     timeOffset = 1;
                     exist = true;
                 }
                 try {
-                    MCRDerivate derivate = new MCRDerivate(version.retrieve().asXML());
+                    MCRDerivate derivate = new MCRDerivate(version.getMetadata().read().asXML());
                     boolean derivateIsHidden = !MCRAccessManager
                         .checkDerivateDisplayPermission(derivate.getId().toString());
                     if (derivateIsHidden && exist) {
@@ -304,7 +305,7 @@ public class MCRMetadataHistoryCommands {
         for (MCRMetadataVersion version : versions) {
             String user = version.getUser();
             Instant revDate = version.getDate().toInstant();
-            if (version.getType() == MCRMetadataVersion.DELETED) {
+            if (version.getState() == MCRMetadataVersionState.DELETED) {
                 if (exist) {
                     items.add(delete(objId, user, revDate));
                     exist = false;
@@ -312,13 +313,13 @@ public class MCRMetadataHistoryCommands {
             } else {
                 //created or updated
                 int timeOffset = 0;
-                if (version.getType() == MCRMetadataVersion.CREATED && !exist) {
+                if (version.getState() == MCRMetadataVersionState.CREATED && !exist) {
                     items.add(create(objId, user, revDate));
                     timeOffset = 1;
                     exist = true;
                 }
                 try {
-                    MCRObject obj = new MCRObject(version.retrieve().asXML());
+                    MCRObject obj = new MCRObject(version.getMetadata().read().asXML());
                     boolean objectIsHidden = MCRMetadataHistoryManager.objectIsHidden(obj);
                     if (objectIsHidden && exist) {
                         items.add(delete(objId, user, revDate.plusMillis(timeOffset)));

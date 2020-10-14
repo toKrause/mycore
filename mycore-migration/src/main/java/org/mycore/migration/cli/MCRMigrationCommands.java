@@ -64,7 +64,7 @@ import org.mycore.datamodel.common.MCRActiveLinkException;
 import org.mycore.datamodel.common.MCRLinkTableManager;
 import org.mycore.datamodel.common.MCRXMLMetadataManager;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion;
-import org.mycore.datamodel.ifs2.MCRVersionedMetadata;
+import org.mycore.datamodel.ifs2.MCRMetadata;
 import org.mycore.datamodel.metadata.MCRBase;
 import org.mycore.datamodel.metadata.MCRDerivate;
 import org.mycore.datamodel.metadata.MCRMetaDerivateLink;
@@ -111,7 +111,7 @@ public class MCRMigrationCommands {
         MCRBase obj = MCRMetadataManager.retrieve(objectID);
         MCRObjectService service = obj.getService();
         if (!service.isFlagTypeSet(MCRObjectService.FLAG_TYPE_CREATEDBY)) { //the egg
-            MCRVersionedMetadata versionedMetadata = MCRXMLMetadataManager.instance().getVersionedMetaData(objectID);
+            MCRMetadata versionedMetadata = MCRXMLMetadataManager.instance().getVersionedMetaData(objectID);
             String createUser = null, modifyUser = null;
             if (versionedMetadata == null) {
                 LOGGER.warn(
@@ -119,7 +119,7 @@ public class MCRMigrationCommands {
                 createUser = MCRSessionMgr.getCurrentSession().getUserInformation().getUserID();
                 modifyUser = createUser;
             } else {
-                List<MCRMetadataVersion> versions = versionedMetadata.listVersions();
+                List<MCRMetadataVersion> versions = versionedMetadata.getVersions();
                 MCRMetadataVersion firstVersion = versions.get(0);
                 for (MCRMetadataVersion version : versions) {
                     if (version.getType() == 'A') {

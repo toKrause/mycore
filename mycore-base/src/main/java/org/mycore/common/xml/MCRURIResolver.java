@@ -102,9 +102,9 @@ import org.mycore.datamodel.classifications2.MCRCategoryID;
 import org.mycore.datamodel.classifications2.utils.MCRCategoryTransformer;
 import org.mycore.datamodel.common.MCRDataURL;
 import org.mycore.datamodel.common.MCRXMLMetadataManager;
+import org.mycore.datamodel.ifs2.MCRMetadata;
 import org.mycore.datamodel.ifs2.MCRMetadataStore;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion;
-import org.mycore.datamodel.ifs2.MCRStoredMetadata;
 import org.mycore.datamodel.metadata.MCRDerivate;
 import org.mycore.datamodel.metadata.MCRFileMetadata;
 import org.mycore.datamodel.metadata.MCRMetadataManager;
@@ -1468,7 +1468,7 @@ public final class MCRURIResolver implements URIResolver {
                 if (versions != null && !versions.isEmpty()) {
                     return getSource(versions);
                 } else {
-                    MCRMetadataStore metadataStore = metadataManager.getStore(id, true);
+                    MCRMetadataStore<?> metadataStore = metadataManager.getStore(id, true);
                     return getSource(metadataStore.retrieve(mcrId.getNumberAsInteger()));
                 }
             } catch (Exception e) {
@@ -1476,7 +1476,7 @@ public final class MCRURIResolver implements URIResolver {
             }
         }
 
-        private Source getSource(MCRStoredMetadata retrieve) throws IOException {
+        private Source getSource(MCRMetadata retrieve) throws IOException {
             Element e = new Element("versions");
             Element v = new Element("version");
             e.addContent(v);

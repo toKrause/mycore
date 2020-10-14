@@ -22,11 +22,12 @@ import java.io.IOException;
 
 public class MCRObjectIDFileSystemDate extends MCRObjectIDDateImpl {
 
+    @SuppressWarnings("unused")
     private MCRObjectIDFileSystemDate() {
         //JAXB requirement
     }
 
-    public MCRObjectIDFileSystemDate(MCRStoredMetadata sm, String id) throws IOException {
+    public MCRObjectIDFileSystemDate(MCRMetadata sm, String id) throws IOException {
         super(sm.getLastModified(), id);
     }
 }

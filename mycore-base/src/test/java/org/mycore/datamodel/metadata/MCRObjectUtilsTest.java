@@ -69,13 +69,18 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
         l22 = createObject("test_document_00000006", l11.getId());
         l31 = createObject("test_document_00000007", l21.getId());
 
-        MCRMetadataManager.create(root);
-        MCRMetadataManager.create(l11);
-        MCRMetadataManager.create(l12);
-        MCRMetadataManager.create(l13);
-        MCRMetadataManager.create(l21);
-        MCRMetadataManager.create(l22);
-        MCRMetadataManager.create(l31);
+        try {
+            MCRMetadataManager.create(root);
+            MCRMetadataManager.create(l11);
+            MCRMetadataManager.create(l12);
+            MCRMetadataManager.create(l13);
+            MCRMetadataManager.create(l21);
+            MCRMetadataManager.create(l22);
+            MCRMetadataManager.create(l31);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     private MCRObject createObject(String id, MCRObjectID parent) {
@@ -199,14 +204,19 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        MCRMetadataManager.delete(l31);
-        MCRMetadataManager.delete(l22);
-        MCRMetadataManager.delete(l21);
-        MCRMetadataManager.delete(l13);
-        MCRMetadataManager.delete(l12);
-        MCRMetadataManager.delete(l11);
-        MCRMetadataManager.delete(root);
-        super.tearDown();
+        try {
+            MCRMetadataManager.delete(l31);
+            MCRMetadataManager.delete(l22);
+            MCRMetadataManager.delete(l21);
+            MCRMetadataManager.delete(l13);
+            MCRMetadataManager.delete(l12);
+            MCRMetadataManager.delete(l11);
+            MCRMetadataManager.delete(root);
+            super.tearDown();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Override
