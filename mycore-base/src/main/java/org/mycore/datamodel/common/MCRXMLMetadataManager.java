@@ -60,7 +60,7 @@ import org.mycore.datamodel.ifs2.MCRObjectIDFileSystemDate;
 import org.mycore.datamodel.ifs2.MCRStore;
 import org.mycore.datamodel.ifs2.MCRStoreCenter;
 import org.mycore.datamodel.ifs2.MCRStoreManager;
-import org.mycore.datamodel.ifs2.MCRVersioningMetadataStore;
+import org.mycore.datamodel.ifs2.MCRSVNXMLMetadataStore;
 import org.mycore.datamodel.metadata.MCRObject;
 import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.datamodel.metadata.history.MCRMetadataHistoryManager;
@@ -114,7 +114,7 @@ public class MCRXMLMetadataManager {
     /**
      * The default IFS2 Metadata store class to use, set by MCR.Metadata.Store.DefaultClass
      */
-    private Class<? extends MCRMetadataStore<?>> defaultClass;
+    private Class<? extends MCRMetadataStore> defaultClass;
 
     /**
      * The default subdirectory slot layout for IFS2 metadata store, is 4-2-2 for 8-digit IDs,
@@ -161,10 +161,9 @@ public class MCRXMLMetadataManager {
         String base = MCRConfiguration2.getStringOrThrow("MCR.Metadata.Store.BaseDir");
         basePath = Paths.get(base);
         checkPath(basePath, "base");
-
-        defaultClass = MCRConfiguration2.<MCRVersioningMetadataStore>getClass("MCR.Metadata.Store.DefaultClass")
-            .orElse(MCRVersioningMetadataStore.class);
-        if (MCRVersioningMetadataStore.class.isAssignableFrom(defaultClass)) {
+        defaultClass = MCRConfiguration2.<MCRMetadataStore>getClass("MCR.Metadata.Store.DefaultClass")
+            .orElse((Class<? extends MCRMetadataStore>) MCRSVNXMLMetadataStore.class);
+        if (MCRSVNXMLMetadataStore.class.isAssignableFrom(defaultClass)) {
             try {
                 String svnBaseValue = MCRConfiguration2.getStringOrThrow("MCR.Metadata.Store.SVNBase");
                 if (!svnBaseValue.endsWith("/")) {
@@ -237,7 +236,7 @@ public class MCRXMLMetadataManager {
      *
      * @param base the MCRObjectID base, e.g. DocPortal_document
      */
-    public MCRMetadataStore<?> getStore(String base) {
+    public MCRMetadataStore getStore(String base) {
         String[] split = base.split("_");
         return getStore(split[0], split[1], false);
     }
@@ -250,7 +249,7 @@ public class MCRXMLMetadataManager {
      *                 is thrown.
      * @return the metadata store
      */
-    public MCRMetadataStore<?> getStore(String base, boolean readOnly) {
+    public MCRMetadataStore getStore(String base, boolean readOnly) {
         String[] split = base.split("_");
         return getStore(split[0], split[1], readOnly);
     }
@@ -261,7 +260,7 @@ public class MCRXMLMetadataManager {
      * @param mcrid the mycore object identifier
      * @return the metadata store
      */
-    public MCRMetadataStore<?> getStore(MCRObjectID mcrid) {
+    public MCRMetadataStore getStore(MCRObjectID mcrid) {
         return getStore(mcrid.getProjectId(), mcrid.getTypeId(), false);
     }
 
@@ -273,7 +272,7 @@ public class MCRXMLMetadataManager {
      *                 is thrown.
      * @return the metadata store
      */
-    public MCRMetadataStore<?> getStore(MCRObjectID mcrid, boolean readOnly) {
+    public MCRMetadataStore getStore(MCRObjectID mcrid, boolean readOnly) {
         return getStore(mcrid.getProjectId(), mcrid.getTypeId(), readOnly);
     }
 
@@ -284,7 +283,7 @@ public class MCRXMLMetadataManager {
      * @param type the object type, e.g. document
      * @return the metadata store
      */
-    public MCRMetadataStore<?> getStore(String project, String type) {
+    public MCRMetadataStore getStore(String project, String type) {
         return getStore(project, type, false);
     }
 
@@ -296,7 +295,7 @@ public class MCRXMLMetadataManager {
      * @param readOnly if readOnly, this method will throw an exception if the store does not exist's yet
      * @return the metadata store
      */
-    public MCRMetadataStore<?> getStore(String project, String type, boolean readOnly) {
+    public MCRMetadataStore getStore(String project, String type, boolean readOnly) {
         String projectType = getStoryKey(project, type);
         String prefix = "MCR.IFS2.Store." + projectType + ".";
         String forceXML = MCRConfiguration2.getString(prefix + "ForceXML").orElse(null);
@@ -315,7 +314,7 @@ public class MCRXMLMetadataManager {
                 }
             }
         }
-        MCRMetadataStore<?> store = MCRStoreManager.getStore(projectType);
+        MCRMetadataStore store = MCRStoreManager.getStore(projectType);
         if (store == null) {
             throw new MCRPersistenceException(
                 new MessageFormat("Metadata store for project {0} and object type {1} is unconfigured.", Locale.ROOT)
@@ -332,7 +331,7 @@ public class MCRXMLMetadataManager {
                 MCRConfiguration2.set(configPrefix + "Class", defaultClass.getName());
                 return defaultClass;
             });
-        if (MCRVersioningMetadataStore.class.isAssignableFrom(clazz)) {
+        if (MCRSVNXMLMetadataStore.class.isAssignableFrom(clazz)) {
             String property = configPrefix + "SVNRepositoryURL";
             String svnURL = MCRConfiguration2.getString(property).orElse(null);
             if (svnURL == null) {
@@ -604,11 +603,11 @@ public class MCRXMLMetadataManager {
         if (id == null) {
             return null;
         }
-        MCRMetadataStore<?> metadataStore = getStore(id, true);
-        if (!(metadataStore instanceof MCRVersioningMetadataStore)) {
+        MCRMetadataStore metadataStore = getStore(id, true);
+        if (!(metadataStore instanceof MCRSVNXMLMetadataStore)) {
             return null;
         }
-        MCRVersioningMetadataStore verStore = (MCRVersioningMetadataStore) metadataStore;
+        MCRSVNXMLMetadataStore verStore = (MCRSVNXMLMetadataStore) metadataStore;
         return verStore.retrieve(id.getNumberAsInteger());
     }
 
@@ -634,7 +633,7 @@ public class MCRXMLMetadataManager {
      * @return the highest stored ID number as a String
      */
     public int getHighestStoredID(String project, String type) {
-        MCRMetadataStore<?> store;
+        MCRMetadataStore store;
         try {
             store = getStore(project, type, true);
         } catch (MCRPersistenceException persistenceException) {
@@ -656,7 +655,7 @@ public class MCRXMLMetadataManager {
             if (mcrid == null) {
                 return false;
             }
-            MCRMetadataStore<?> store;
+            MCRMetadataStore store;
             try {
                 store = getStore(mcrid, true);
             } catch (MCRPersistenceException persistenceException) {
@@ -675,7 +674,7 @@ public class MCRXMLMetadataManager {
      * @param base the MCRObjectID base, e.g. DocPortal_document
      */
     public List<String> listIDsForBase(String base) {
-        MCRMetadataStore<?> store;
+        MCRMetadataStore store;
         try {
             store = getStore(base, true);
         } catch (MCRPersistenceException e) {
@@ -719,10 +718,13 @@ public class MCRXMLMetadataManager {
      * @return list of all mycore identifiers found in the metadata store
      */
     public List<String> listIDs() {
+        LOGGER.warn("Entering listIDs.");
         try (Stream<String> streamIDs = StreamSupport.stream(createdStores.spliterator(), true)) {
             return streamIDs.flatMap(projectID -> {
-                final MCRMetadataStore<?> createdStore = this.getStore(projectID, true);
+                LOGGER.warn(projectID);
+                final MCRMetadataStore createdStore = this.getStore(projectID, true);
                 return createdStore.getStoredIDs().boxed().map(id -> {
+                    LOGGER.warn(projectID + " - " + id);
                     return projectID + "_" + createdStore.createIDWithLeadingZeros(id);
                 });
             }).collect(Collectors.toUnmodifiableList());
@@ -817,7 +819,7 @@ public class MCRXMLMetadataManager {
      * @throws IOException thrown by {@link MCRMetadataStore#retrieve(int)}
      */
     public long getLastModified(MCRObjectID id) throws IOException {
-        MCRMetadataStore<?> store = getStore(id, true);
+        MCRMetadataStore store = getStore(id, true);
         MCRMetadata metadata = store.retrieve(id.getNumberAsInteger());
         if (metadata != null) {
             return metadata.getLastModified().getTime();

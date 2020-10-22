@@ -44,7 +44,7 @@ import org.mycore.common.content.MCRContent;
  * 
  * @author Frank Lützenkirchen
  */
-public abstract class MCRMetadataStore<T> extends MCRStore {
+public abstract class MCRMetadataStore extends MCRStore {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -130,11 +130,14 @@ public abstract class MCRMetadataStore<T> extends MCRStore {
      *         metadata object
      */
     public MCRMetadata retrieve(int id) throws MCRPersistenceException {
+        LOGGER.info("Retrieving {} from store {}.", this.createIDWithLeadingZeros(id), this.getID());
         if (exists(id)) {
+            LOGGER.info("Exists.");
             MCRMetadata metadata = new MCRMetadata(this, id);
             metadata.read();
             return metadata;
         } else {
+            LOGGER.info("Doesn't exist.");
             return null;
         }
     }
@@ -156,15 +159,6 @@ public abstract class MCRMetadataStore<T> extends MCRStore {
 
     public abstract boolean exists(MCRMetadata metadata) throws MCRPersistenceException;
 
-    /**
-     * Creates an object in the underlying repository system.
-     * 
-     * This implementation is a stub for input verification, please {@code @Override} this method with your store-specific implementation and call {@code super.createContent(metadata, content)} to use these checks. 
-     * @param metadata
-     * @param content
-     * @throws MCRPersistenceException
-     * @throws MCRUsageException
-     */
     protected abstract void createContent(MCRMetadata metadata, MCRContent content)
         throws MCRPersistenceException, MCRUsageException;
 
@@ -175,8 +169,6 @@ public abstract class MCRMetadataStore<T> extends MCRStore {
     protected abstract void deleteContent(MCRMetadata metadata) throws MCRPersistenceException;
 
     public abstract List<MCRMetadataVersion> getMetadataVersions(int id) throws MCRPersistenceException;
-
-    protected abstract T getRepository() throws MCRPersistenceException;
 
     public abstract void verify() throws MCRPersistenceException, MCRUsageException;
 
@@ -219,7 +211,8 @@ public abstract class MCRMetadataStore<T> extends MCRStore {
     }
 
     protected final void checkIDPermitted(int id) throws MCRUsageException {
-        if (id < 1)
+        if (id < 1) {
             throw new MCRUsageException("ID " + id + " must be >= 1!");
+        }
     }
 }

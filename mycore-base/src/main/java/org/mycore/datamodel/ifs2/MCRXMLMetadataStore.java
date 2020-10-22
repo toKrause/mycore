@@ -53,8 +53,6 @@ import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
  * @author Frank Lützenkirchen
  */
 
-// This store does not have a repository
-@SuppressWarnings("rawtypes")
 public class MCRXMLMetadataStore extends MCRMetadataStore {
 
     protected static final Logger LOGGER = LogManager.getLogger();
@@ -108,6 +106,9 @@ public class MCRXMLMetadataStore extends MCRMetadataStore {
         } catch (IOException e) {
             throw new MCRPersistenceException("Failed to delete " + metadata.getFullID() + "!", e);
         }
+        if (this.existsXML(metadata)) {
+            throw new MCRPersistenceException("Deleted object " + metadata.getFullID() + " still exists in store!");
+        }
     }
 
     @Override
@@ -126,11 +127,6 @@ public class MCRXMLMetadataStore extends MCRMetadataStore {
         } else {
             return new ArrayList<>();
         }
-    }
-
-    @Override
-    public Object getRepository() throws MCRPersistenceException {
-        throw new MCRPersistenceException("Store does not use a repository!");
     }
 
     @Override
@@ -160,21 +156,25 @@ public class MCRXMLMetadataStore extends MCRMetadataStore {
         }
     }
 
-    @Override
-    public boolean exists(MCRMetadata metadata) throws MCRPersistenceException {
+    private boolean existsXML(MCRMetadata metadata) throws MCRPersistenceException {
         return Files.exists(getSlot(metadata.getID()));
     }
 
-    private void checkMetadata(MCRMetadata metadata) throws MCRPersistenceException {
+    @Override
+    public boolean exists(MCRMetadata metadata) throws MCRPersistenceException {
+        return existsXML(metadata);
+    }
+
+    protected void checkMetadata(MCRMetadata metadata) throws MCRPersistenceException {
         int id = metadata.getID();
         if (id <= 0) {
             throw new MCRPersistenceException("ID " + id + " < 1!");
         }
     }
 
-    private void checkMetadata(MCRMetadata metadata, boolean shouldExist) throws MCRPersistenceException {
+    protected void checkMetadata(MCRMetadata metadata, boolean shouldExist) throws MCRPersistenceException {
         checkMetadata(metadata);
-        boolean doesExist = exists(metadata);
+        boolean doesExist = existsXML(metadata);
         if (shouldExist && !doesExist) {
             throw new MCRPersistenceException("ID does not exist in store!");
         } else if (!shouldExist && doesExist) {

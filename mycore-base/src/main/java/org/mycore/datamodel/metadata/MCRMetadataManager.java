@@ -421,6 +421,7 @@ public final class MCRMetadataManager {
     private static void delete(final MCRObject mcrObject, BiConsumer<MCRObject, MCRObjectID> parentOperation)
         throws MCRPersistenceException, MCRActiveLinkException, MCRAccessException {
         MCRObjectID id = mcrObject.getId();
+        LOGGER.info("Deleting {}.", id.toString());
         if (id == null) {
             throw new MCRPersistenceException("The MCRObjectID is null.");
         }
@@ -451,6 +452,7 @@ public final class MCRMetadataManager {
         // remove child from parent
         final MCRObjectID parentId = mcrObject.getStructure().getParentID();
         if (parentId != null) {
+            LOGGER.info("Removing child {} from parent {}.", id.toString(), parentId.toString());
             parentOperation.accept(mcrObject, parentId);
         }
 

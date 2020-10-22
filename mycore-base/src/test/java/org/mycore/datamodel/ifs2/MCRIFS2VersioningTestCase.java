@@ -30,11 +30,11 @@ public class MCRIFS2VersioningTestCase extends MCRIFS2TestCase {
     @Rule
     public TemporaryFolder versionBaseDir = new TemporaryFolder();
 
-    private MCRVersioningMetadataStore versStore;
+    private MCRSVNXMLMetadataStore versStore;
 
     @Override
     protected void createStore() throws Exception {
-        setVersStore(MCRStoreManager.createStore(STORE_ID, MCRVersioningMetadataStore.class));
+        setVersStore(MCRStoreManager.createStore(STORE_ID, MCRSVNXMLMetadataStore.class));
     }
 
     @Override
@@ -46,11 +46,11 @@ public class MCRIFS2VersioningTestCase extends MCRIFS2TestCase {
         versionBaseDir.delete();
     }
 
-    public void setVersStore(MCRVersioningMetadataStore versStore) {
+    public void setVersStore(MCRSVNXMLMetadataStore versStore) {
         this.versStore = versStore;
     }
 
-    public MCRVersioningMetadataStore getVersStore() {
+    public MCRSVNXMLMetadataStore getVersStore() {
         return versStore;
     }
 

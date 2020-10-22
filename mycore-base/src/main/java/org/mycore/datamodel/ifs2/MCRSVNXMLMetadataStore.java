@@ -26,10 +26,10 @@ import java.net.URISyntaxException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -79,7 +79,7 @@ import org.tmatesoft.svn.core.wc.admin.SVNAdminEvent;
  *
  * @author Frank Lützenkirchen
  */
-public class MCRVersioningMetadataStore extends MCRXMLMetadataStore {
+public class MCRSVNXMLMetadataStore extends MCRXMLMetadataStore {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
@@ -153,8 +153,7 @@ public class MCRVersioningMetadataStore extends MCRXMLMetadataStore {
      * @return the SVN repository used to manage metadata versions in this
      *         store.
      */
-    @Override
-    public SVNRepository getRepository() throws MCRPersistenceException {
+    private SVNRepository getRepository() throws MCRPersistenceException {
         LOGGER.info("Entering getRepository()");
         try {
             SVNRepository repository = SVNRepositoryFactory.create(repURL);
@@ -305,16 +304,14 @@ public class MCRVersioningMetadataStore extends MCRXMLMetadataStore {
 
     @Override
     public boolean exists(MCRMetadata metadata) throws MCRPersistenceException {
+        if (super.exists(metadata)) {
+            return true;
+        }
         Long requestedRevision = metadata.getRevision();
         try {
             LOGGER.warn("ID {}, Revision {}, Path {}", metadata.getFullID(),
                 requestedRevision != null ? requestedRevision : "any",
                 "/" + getSlotPath(metadata.getID()));
-            try {
-                throw new MCRUsageException("DEBUG");
-            } catch (MCRUsageException e) {
-                e.printStackTrace();
-            }
             List<MCRMetadataVersion> versions;
             try {
                 versions = getMetadataVersions(metadata.getID());
@@ -336,66 +333,62 @@ public class MCRVersioningMetadataStore extends MCRXMLMetadataStore {
         }
     }
 
-    private Integer highestStoredID;
-
-    /*
-     * Expensive. Cache last result & lazily bail early the next time. Increase cache variable on creates.
+    /**
+     * Updates the version stored in the local filesystem to the latest version
+     * from Subversion repository HEAD.
      */
-    @Override
-    public synchronized int getHighestStoredID() throws MCRPersistenceException {
-        LOGGER.info("In getHighestStoredID()");
-        if (highestStoredID != null) {
-            LOGGER.info("Cached value found.");
-            LOGGER.info("Returning: {}", highestStoredID.intValue());
-            return highestStoredID.intValue();
-        } else {
-            LOGGER.info("No cached value found, querying SVN repository.");
-            int highestEncounteredID = 0;
-            try {
-                while (highestEncounteredID < Integer.MAX_VALUE) {
-                    if (getMetadataVersions(++highestEncounteredID).size() != 0)
-                        throw new MCRPersistenceException("Condition reached");
-                }
-                throw new RuntimeException("Too many entities in store, imminent integer overflow.");
-            } catch (MCRPersistenceException e) {
-                e.printStackTrace();
-            } catch (RuntimeException e) {
-                throw new MCRPersistenceException("Failed to get highest stored ID!", e);
-            }
-            highestStoredID = --highestEncounteredID;
-            LOGGER.info("Result cached. Returning: {}", highestEncounteredID);
-            return highestEncounteredID;
+    public void updateAll() throws Exception {
+        SVNRepository repository = getRepository();
+        for (Iterator<Integer> ids = listIDs(true); ids.hasNext();) {
+            MCRByteArrayOutputStream baos = new MCRByteArrayOutputStream();
+            int id = ids.next();
+            repository.getFile("/" + getSlotPath(id), -1, null, baos);
+            baos.close();
+            MCRMetadata metadata = new MCRMetadata(this, id);
+            super.updateContent(metadata, new MCRByteContent(baos.getBuffer(), 0, baos.size(),
+                metadata.getLastModified().getTime()));
         }
     }
 
-    @Override
-    public IntStream getStoredIDs() {
-        return highestStoredID != null ? IntStream.rangeClosed(1, getHighestStoredID()) : IntStream.of();
+    /**
+     * Checks if the version of an object in the local store is up to date with the latest
+     * version in SVN repository
+     *
+     * @return true, if the local version in store is the latest version
+     */
+    public boolean isUpToDate(int id) throws MCRPersistenceException, IOException {
+        MCRContent contentSVN, contentXML;
+        contentSVN = readContent(retrieve(id));
+        contentXML = super.readContent(super.retrieve(id));
+        return (contentSVN != null) && (contentXML != null)
+            && (contentSVN.asByteArray() == contentXML.asByteArray());
     }
 
     @Override
     public void createContent(MCRMetadata metadata, MCRContent content)
         throws MCRPersistenceException, MCRUsageException {
-        checkIDPermitted(metadata.getID());
-        if (exists(metadata) && !metadata.isDeletedInRepository())
-            throw new MCRUsageException("ID " + metadata.getFullID() + " already exists!");
-        if (content == null)
-            throw new MCRUsageException(
-                "Null content cannot be stored!");
+        if (content == null) {
+            throw new MCRUsageException("Cannot update " + metadata.getFullID() + " in repository with null content!");
+        }
+        super.createContent(metadata, content);
         commit(MCRMetadataVersionState.CREATED, metadata, content);
-        if (highestStoredID == null)
-            getHighestStoredID();
-        ++highestStoredID;
     }
 
     // TODO DRY for repo-iteration code
     @Override
     @Nullable
     public MCRContent readContent(MCRMetadata metadata) throws MCRPersistenceException {
-        checkIDPermitted(metadata.getID());
-        if (!exists(metadata))
+        if (metadata.getRevision() == null) {
+            MCRContent content = super.readContent(metadata);
+            if (content != null) {
+                return content;
+            }
+        }
+        LOGGER.warn("Object {} not found in XML store, trying SVN repository.", metadata.getFullID());
+        if (!exists(metadata)) {
             throw new MCRUsageException(
-                "ID " + createIDWithLeadingZeros(metadata.getID()) + " does not exist in store!");
+                "Object " + metadata.getFullID() + " does not exist in store!");
+        }
 
         int requestedID = metadata.getID();
         Long requestedRevision = metadata.getRevision();
@@ -440,17 +433,38 @@ public class MCRVersioningMetadataStore extends MCRXMLMetadataStore {
     @Override
     public void updateContent(MCRMetadata metadata, MCRContent content)
         throws MCRPersistenceException, MCRUsageException {
-        if (content == null)
+        if (content == null) {
             throw new MCRUsageException("Cannot update " + metadata.getFullID() + " in repository with null content!");
+        }
+        if (metadata.isDeletedInRepository()) {
+            super.createContent(metadata, content);
+        } else {
+            super.updateContent(metadata, content);
+        }
         commit(MCRMetadataVersionState.UPDATED, metadata, content);
     }
 
     @Override
     public void deleteContent(MCRMetadata metadata) throws MCRPersistenceException {
-        commit(MCRMetadataVersionState.DELETED, metadata, null);
+        SVNCommitInfo info;
+        try {
+            SVNRepository repository = getRepository();
+            ISVNEditor editor = repository.getCommitEditor("Deleting object " + metadata.getFullID() + " in store.",
+                null);
+            editor.openRoot(-1);
+            editor.deleteEntry("/" + getSlotPath(metadata.getID()), -1);
+            editor.closeDir();
+
+            info = editor.closeEdit();
+            LOGGER.info("SVN commit of delete finished, new revision {}", info.getNewRevision());
+        } catch (SVNException e) {
+            LOGGER.error("Error while deleting {} in SVN ", metadata.getFullID(), e);
+        } finally {
+            super.deleteContent(metadata);
+        }
     }
 
-    private static final Map<String, MCRMetadataVersionState> typeStateMapping = Stream.of(
+    private static final Map<String, MCRMetadataVersionState> TYPE_STATE_MAPPING = Stream.of(
         new AbstractMap.SimpleImmutableEntry<>("A", MCRMetadataVersionState.CREATED),
         new AbstractMap.SimpleImmutableEntry<>("M", MCRMetadataVersionState.UPDATED),
         new AbstractMap.SimpleImmutableEntry<>("R", MCRMetadataVersionState.UPDATED),
@@ -473,7 +487,8 @@ public class MCRVersioningMetadataStore extends MCRXMLMetadataStore {
                 SVNLogEntryPath svnLogEntryPath = svnEntry.getChangedPaths().get(filepath);
                 if (svnLogEntryPath != null) {
                     ++visitedRevisions;
-                    MCRMetadataVersionState state = typeStateMapping.get(String.valueOf(svnLogEntryPath.getType()));
+                    MCRMetadataVersionState state = TYPE_STATE_MAPPING.get(String.valueOf(svnLogEntryPath.getType()));
+                    LOGGER.info("Base: {}", this.getID());
                     LOGGER.info("ID: {}", id);
                     LOGGER.info("Revision: {}", visitedRevisions);
                     LOGGER.info("User: {}", svnEntry.getAuthor());

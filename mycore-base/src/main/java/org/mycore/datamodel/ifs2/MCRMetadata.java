@@ -22,7 +22,7 @@ public class MCRMetadata {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 
-    private final MCRMetadataStore<?> store;
+    private final MCRMetadataStore store;
 
     private final String base;
 
@@ -43,7 +43,7 @@ public class MCRMetadata {
     @Nullable
     protected Date date;
 
-    public MCRMetadata(MCRMetadataStore<?> store, int id) {
+    public MCRMetadata(MCRMetadataStore store, int id) {
         this.store = store;
         base = store.getID();
         docType = store.getDocType();
@@ -53,7 +53,7 @@ public class MCRMetadata {
         this.updated = false;
     }
 
-    public MCRMetadata(MCRMetadataStore<?> store, int id, long revision) {
+    public MCRMetadata(MCRMetadataStore store, int id, long revision) {
         this(store, id);
         this.revision = revision;
         this.date = store.getLastModified(this);

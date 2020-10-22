@@ -32,7 +32,8 @@ import org.apache.logging.log4j.Logger;
 /**
  * Provides information about the revision of a metadata object at the time of the request.
  * 
- * This includes the revision number, date, state ({@link MCRMetadataVersionState}), the committer and a reference to the metadata object itself. ({@link MCRMetadata}) 
+ * This includes the revision number, date, state ({@link MCRMetadataVersionState}),
+ * the committer and a reference to the metadata object itself. ({@link MCRMetadata}) 
  * 
  * @author Frank Lützenkirchen
  * @author Christoph Neidahl (OPNA2608)
@@ -56,7 +57,7 @@ public class MCRMetadataVersion {
      * @author Christoph Neidahl (OPNA2608)
      *
      */
-    public static enum MCRMetadataVersionState {
+    public enum MCRMetadataVersionState {
         CREATED,
         UPDATED,
         DELETED
@@ -157,13 +158,13 @@ public class MCRMetadataVersion {
     public MCRMetadataVersionState getState() {
         return state;
     }
-    
+
     /* HELPERS / COMPATIBILITY */
 
     public char getType() {
         return state.toString().charAt(0);
     }
-    
+
     public void restore() {
         getMetadata().restore();
     }

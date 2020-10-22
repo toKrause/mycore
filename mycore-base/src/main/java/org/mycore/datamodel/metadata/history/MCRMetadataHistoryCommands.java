@@ -51,7 +51,7 @@ import org.mycore.datamodel.ifs2.MCRMetadata;
 import org.mycore.datamodel.ifs2.MCRMetadataStore;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
-import org.mycore.datamodel.ifs2.MCRVersioningMetadataStore;
+import org.mycore.datamodel.ifs2.MCRSVNXMLMetadataStore;
 import org.mycore.datamodel.metadata.MCRDerivate;
 import org.mycore.datamodel.metadata.MCRMetadataManager;
 import org.mycore.datamodel.metadata.MCRObject;
@@ -116,10 +116,10 @@ public class MCRMetadataHistoryCommands {
     @MCRCommand(syntax = "build metadata history of base {0}",
         help = "build metadata history of all objects with base id {0}")
     public static List<String> buildHistory(String baseId) {
-        MCRMetadataStore<?> store = MCRXMLMetadataManager.instance().getStore(baseId, true);
-        if (store instanceof MCRVersioningMetadataStore) {
+        MCRMetadataStore store = MCRXMLMetadataManager.instance().getStore(baseId, true);
+        if (store instanceof MCRSVNXMLMetadataStore) {
             LogManager.getLogger().info("Verify SVN history of {}", baseId);
-            ((MCRVersioningMetadataStore) store).verify();
+            ((MCRSVNXMLMetadataStore) store).verify();
         }
         ExecutorService executorService = Executors.newWorkStealingPool();
         MCRSession currentSession = MCRSessionMgr.getCurrentSession();
@@ -164,9 +164,9 @@ public class MCRMetadataHistoryCommands {
     private static Stream<MCRMetaHistoryItem> buildDerivateHistory(MCRObjectID derId) {
         try {
             List<MCRMetadataVersion> versions = Collections.emptyList();
-            MCRMetadataStore<?> store = MCRXMLMetadataManager.instance().getStore(derId, true);
-            if (store instanceof MCRVersioningMetadataStore) {
-                MCRMetadata versionedMetadata = ((MCRVersioningMetadataStore) store)
+            MCRMetadataStore store = MCRXMLMetadataManager.instance().getStore(derId, true);
+            if (store instanceof MCRSVNXMLMetadataStore) {
+                MCRMetadata versionedMetadata = ((MCRSVNXMLMetadataStore) store)
                     .retrieve(derId.getNumberAsInteger());
                 versions = versionedMetadata.getVersions();
             }
@@ -184,9 +184,9 @@ public class MCRMetadataHistoryCommands {
     private static Stream<MCRMetaHistoryItem> buildObjectHistory(MCRObjectID objId) {
         try {
             List<MCRMetadataVersion> versions = Collections.emptyList();
-            MCRMetadataStore<?> store = MCRXMLMetadataManager.instance().getStore(objId, true);
-            if (store instanceof MCRVersioningMetadataStore) {
-                MCRMetadata versionedMetadata = ((MCRVersioningMetadataStore) store)
+            MCRMetadataStore store = MCRXMLMetadataManager.instance().getStore(objId, true);
+            if (store instanceof MCRSVNXMLMetadataStore) {
+                MCRMetadata versionedMetadata = ((MCRSVNXMLMetadataStore) store)
                     .retrieve(objId.getNumberAsInteger());
                 versions = versionedMetadata.getVersions();
             }
