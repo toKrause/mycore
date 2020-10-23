@@ -168,7 +168,7 @@ public class MCRMetadataHistoryCommands {
             if (store instanceof MCRSVNXMLMetadataStore) {
                 MCRMetadata versionedMetadata = ((MCRSVNXMLMetadataStore) store)
                     .retrieve(derId.getNumberAsInteger());
-                versions = versionedMetadata.getVersions();
+                versions = versionedMetadata.listVersions();
             }
             if (versions.isEmpty()) {
                 return buildSimpleDerivateHistory(derId);
@@ -188,7 +188,7 @@ public class MCRMetadataHistoryCommands {
             if (store instanceof MCRSVNXMLMetadataStore) {
                 MCRMetadata versionedMetadata = ((MCRSVNXMLMetadataStore) store)
                     .retrieve(objId.getNumberAsInteger());
-                versions = versionedMetadata.getVersions();
+                versions = versionedMetadata.listVersions();
             }
             if (versions.isEmpty()) {
                 return buildSimpleObjectHistory(objId);

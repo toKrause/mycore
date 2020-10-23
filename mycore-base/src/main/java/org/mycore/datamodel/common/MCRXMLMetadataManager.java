@@ -718,13 +718,10 @@ public class MCRXMLMetadataManager {
      * @return list of all mycore identifiers found in the metadata store
      */
     public List<String> listIDs() {
-        LOGGER.warn("Entering listIDs.");
         try (Stream<String> streamIDs = StreamSupport.stream(createdStores.spliterator(), true)) {
             return streamIDs.flatMap(projectID -> {
-                LOGGER.warn(projectID);
                 final MCRMetadataStore createdStore = this.getStore(projectID, true);
                 return createdStore.getStoredIDs().boxed().map(id -> {
-                    LOGGER.warn(projectID + " - " + id);
                     return projectID + "_" + createdStore.createIDWithLeadingZeros(id);
                 });
             }).collect(Collectors.toUnmodifiableList());

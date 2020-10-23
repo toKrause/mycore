@@ -13,7 +13,10 @@ import org.mycore.common.content.MCRContent;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
 
 /**
- * TODO document class & methods once completed
+ * An object-focused, generic interface to <code>{@link MCRMetadataStore}</code> extensions.</br>
+ * 
+ * An <code>MCRMetadata</code> instance represents an object that is (to be) stored in a
+ * <code>MCRMetadataStore</code>. It has an immutable 
  * 
  * @author bt1cn
  *
@@ -163,14 +166,8 @@ public class MCRMetadata {
         return getVersionLast().getState() == MCRMetadataVersionState.DELETED;
     }
 
-    /**
-     * @deprecated Renamed to {@link getVersions}
-     * @return
-     * @throws MCRPersistenceException
-     */
-    @Deprecated
     public List<MCRMetadataVersion> listVersions() throws MCRPersistenceException {
-        return getVersions();
+        return store.getMetadataVersions(id);
     }
 
     public void restore() throws MCRPersistenceException {
@@ -183,10 +180,6 @@ public class MCRMetadata {
 
     public MCRMetadataVersion getVersion(long revision) throws MCRPersistenceException {
         return store.getMetadataVersion(id, revision);
-    }
-
-    public List<MCRMetadataVersion> getVersions() throws MCRPersistenceException {
-        return store.getMetadataVersions(id);
     }
 
     public MCRMetadataVersion getVersionLast() throws MCRPersistenceException {

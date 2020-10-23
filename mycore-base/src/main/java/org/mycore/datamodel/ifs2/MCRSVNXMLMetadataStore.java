@@ -302,11 +302,7 @@ public class MCRSVNXMLMetadataStore extends MCRXMLMetadataStore {
         }
     }
 
-    @Override
-    public boolean exists(MCRMetadata metadata) throws MCRPersistenceException {
-        if (super.exists(metadata)) {
-            return true;
-        }
+    public boolean existsSVN(MCRMetadata metadata) throws MCRPersistenceException {
         Long requestedRevision = metadata.getRevision();
         try {
             LOGGER.warn("ID {}, Revision {}, Path {}", metadata.getFullID(),
@@ -385,7 +381,7 @@ public class MCRSVNXMLMetadataStore extends MCRXMLMetadataStore {
             }
         }
         LOGGER.warn("Object {} not found in XML store, trying SVN repository.", metadata.getFullID());
-        if (!exists(metadata)) {
+        if (!existsSVN(metadata)) {
             throw new MCRUsageException(
                 "Object " + metadata.getFullID() + " does not exist in store!");
         }

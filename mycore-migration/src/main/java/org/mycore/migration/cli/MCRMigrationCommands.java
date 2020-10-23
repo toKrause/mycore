@@ -119,7 +119,7 @@ public class MCRMigrationCommands {
                 createUser = MCRSessionMgr.getCurrentSession().getUserInformation().getUserID();
                 modifyUser = createUser;
             } else {
-                List<MCRMetadataVersion> versions = versionedMetadata.getVersions();
+                List<MCRMetadataVersion> versions = versionedMetadata.listVersions();
                 MCRMetadataVersion firstVersion = versions.get(0);
                 for (MCRMetadataVersion version : versions) {
                     if (version.getType() == 'A') {

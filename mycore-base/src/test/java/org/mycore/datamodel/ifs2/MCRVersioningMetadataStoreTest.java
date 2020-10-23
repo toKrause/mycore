@@ -20,8 +20,8 @@ package org.mycore.datamodel.ifs2;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -99,8 +99,6 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         }
     }
 
-    // SVN store lacks hardwired XML store "cache" now
-    // `exist` of deleted IDs on versioned store evaluates to true (existed at some point, versioning data preserved)
     @Test
     public void delete() throws Exception {
         System.out.println("TEST DELETE");
@@ -108,12 +106,12 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         MCRMetadata metadata = getVersStore().create(new MCRJDOMContent(xml1));
         int id = metadata.getID();
         assertTrue(getVersStore().exists(id));
-        assertFalse(metadata.getVersion().getState() == MCRMetadataVersionState.DELETED);
-        assertFalse(metadata.getVersionLast().getState() == MCRMetadataVersionState.DELETED);
+        assertFalse(metadata.isDeleted());
+        assertFalse(metadata.isDeletedInRepository());
         getVersStore().delete(id);
-        assertTrue(getVersStore().exists(id));
-        assertFalse(metadata.getVersion().getState() == MCRMetadataVersionState.DELETED);
-        assertTrue(metadata.getVersionLast().getState() == MCRMetadataVersionState.DELETED);
+        assertFalse(getVersStore().exists(id));
+        assertFalse(metadata.isDeleted());
+        assertTrue(metadata.isDeletedInRepository());
     }
 
     @Test
@@ -151,7 +149,7 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         // SVN + XML decoupled, obsoleted
         // assertTrue(vm.isUpToDate());
 
-        List<MCRMetadataVersion> versions = vm.getVersions();
+        List<MCRMetadataVersion> versions = vm.listVersions();
         assertNotNull(versions);
         assertEquals(1, versions.size());
         MCRMetadataVersion mv = versions.get(0);
@@ -170,7 +168,7 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         // SVN + XML decoupled, obsoleted(??)
         // assertTrue(vm.isUpToDate());
 
-        versions = vm.getVersions();
+        versions = vm.listVersions();
         assertEquals(2, versions.size());
         mv = versions.get(0);
         assertEquals(baseRev, mv.getRevision());
@@ -183,7 +181,7 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         Document xml3 = new Document(new Element("bongo"));
         vm.update(new MCRJDOMContent(xml3));
 
-        versions = vm.getVersions();
+        versions = vm.listVersions();
         assertEquals(3, versions.size());
         mv = versions.get(0);
         assertEquals(baseRev, mv.getRevision());
@@ -214,7 +212,7 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         // assertEquals("bango", vm.read().asXML().getRootElement().getName());
         assertEquals("bongo", vm.read().asXML().getRootElement().getName());
         assertEquals("bango", vm.getVersion(2).getMetadata().read().asXML().getRootElement().getName());
-        assertEquals(4, vm.getVersions().size());
+        assertEquals(4, vm.listVersions().size());
     }
 
     @Test
@@ -227,7 +225,7 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         vm.delete();
         root.setName("bongo");
         vm = getVersStore().create(vm.getID(), new MCRJDOMContent(xml1));
-        List<MCRMetadataVersion> versions = vm.getVersions();
+        List<MCRMetadataVersion> versions = vm.listVersions();
         assertEquals(4, versions.size());
         assertEquals(MCRMetadataVersionState.CREATED, versions.get(0).getState());
         assertEquals(MCRMetadataVersionState.UPDATED, versions.get(1).getState());
@@ -240,26 +238,25 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
             getVersStore().getMetadataVersionLast(vm.getID()).getMetadata().read().asXML().getRootElement().getName());
     }
 
-    // SVN store lacks hardwired XML store "cache" now
-    // `exist` of deleted IDs on versioned store evaluates to true (existed at some point, versioning data preserved)
     @Test
     public void deletedVersions() throws Exception {
         Element root = new Element("bingo");
         Document xml1 = new Document(root);
-        MCRMetadata vm = getVersStore().create(new MCRJDOMContent(xml1));
+        MCRSVNXMLMetadataStore store = getVersStore();
+        MCRMetadata vm = store.create(new MCRJDOMContent(xml1));
         int id = vm.getID();
-        assertTrue(getVersStore().exists(id));
-        assertFalse(vm.getVersion().getState() == MCRMetadataVersionState.DELETED);
-        assertFalse(vm.getVersionLast().getState() == MCRMetadataVersionState.DELETED);
+        assertTrue(store.exists(id));
+        assertFalse(vm.isDeleted());
+        assertFalse(vm.isDeletedInRepository());
 
-        getVersStore().delete(id);
-        assertTrue(getVersStore().exists(id));
-        assertFalse(vm.getVersion().getState() == MCRMetadataVersionState.DELETED);
-        assertTrue(vm.getVersionLast().getState() == MCRMetadataVersionState.DELETED);
-
-        vm = getVersStore().retrieve(vm.getID());
+        vm.delete();
+        assertFalse(store.exists(id));
+        assertTrue(vm.isDeleted());
         assertTrue(vm.isDeletedInRepository());
-        List<MCRMetadataVersion> versions = vm.getVersions();
+
+        assertNull(store.retrieve(vm.getID()));
+
+        List<MCRMetadataVersion> versions = vm.listVersions();
         MCRMetadataVersion v1 = versions.get(0);
         MCRMetadataVersion v2 = versions.get(1);
 
@@ -271,11 +268,16 @@ public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
         }
         assertTrue(cannotRestoreDeleted);
 
+        try {
         v1.restore();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
         assertFalse(vm.isDeletedInRepository());
         // vm -> deleted revision, contains no MCRContent
         // assertEquals(root.getName(), vm.read().asXML().getRootElement().getName());
-        assertEquals(root.getName(), getVersStore().retrieve(vm.getID()).read().asXML().getRootElement().getName());
+        assertEquals(root.getName(), store.retrieve(vm.getID()).read().asXML().getRootElement().getName());
     }
 
     @Test
