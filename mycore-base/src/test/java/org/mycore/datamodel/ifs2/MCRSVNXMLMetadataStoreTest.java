@@ -45,7 +45,7 @@ import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
  *
  * @author Frank Lützenkirchen
  */
-public class MCRVersioningMetadataStoreTest extends MCRIFS2VersioningTestCase {
+public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
 
     @Test
     public void createDocument() throws Exception {

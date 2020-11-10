@@ -30,10 +30,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Provides information about the revision of a metadata object at the time of the request.
+ * Provides information about the revision of an {@link MCRMetadata} object at the time of object instantiation.
  * 
  * This includes the revision number, date, state ({@link MCRMetadataVersionState}),
- * the committer and a reference to the metadata object itself. ({@link MCRMetadata}) 
+ * the committer and a reference to the metadata object itself.
  * 
  * @author Frank Lützenkirchen
  * @author Christoph Neidahl (OPNA2608)
@@ -64,31 +64,31 @@ public class MCRMetadataVersion {
     }
 
     /**
-     * The metadata document this version belongs to.
+     * The metadata object this version belongs to.
      */
     @XmlTransient
     private final MCRMetadata metadata;
 
     /**
-     * The revision number of this version
+     * The revision number of this version.
      */
     @XmlAttribute(name = "r")
     private final long revision;
 
     /**
-     * The user that created this version
+     * The user that created this version.
      */
     @XmlAttribute
     private final String user;
 
     /**
-     * The date this version was created
+     * The date this version was created.
      */
     @XmlAttribute
     private final Date date;
 
     /**
-     * Was this version result of a create, update or delete?
+     * Was this version the result of a create, update or delete operation?
      */
     @XmlAttribute()
     private final MCRMetadataVersionState state;
@@ -114,57 +114,41 @@ public class MCRMetadataVersion {
         this.state = state;
     }
 
-    /**
-     * Returns the metadata object this version belongs to.
-     * 
-     * @return the metadata object this version belongs to
-     */
     public final MCRMetadata getMetadata() {
         return metadata;
     }
 
-    /**
-     * Returns the revision number of this version.
-     * 
-     * @return the revision number of this version
-     */
     public long getRevision() {
         return revision;
     }
 
-    /**
-     * Returns the user that created this version.
-     * 
-     * @return the user that created this version
-     */
     public String getUser() {
         return user;
     }
 
-    /**
-     * Returns the date and time this version was created.
-     * 
-     * @return the date and time this version was created
-     */
     public Date getDate() {
         return date;
     }
 
-    /**
-     * Returns the state this version represents.
-     * 
-     * @return the state this version represents
-     */
     public MCRMetadataVersionState getState() {
         return state;
     }
 
     /* HELPERS / COMPATIBILITY */
 
+    /**
+     * For compatibility, used by existing tests and {@link MCRSVNXMLMetadataStore}
+     * instead of {@link MCRMetadataVersionState}.
+     * 
+     * @return {@link #state} shortened to the first character
+     */
     public char getType() {
         return state.toString().charAt(0);
     }
 
+    /**
+     * Convenience. Calls the linked object's restore shorthand.
+     */
     public void restore() {
         getMetadata().restore();
     }

@@ -30,10 +30,8 @@ import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.common.content.MCRContent;
 
 /**
- * TODO rewrite
- * 
- * Stores XML metadata documents (or optionally any other BLOB data) in a
- * persistent filesystem structure
+ * Describes an abstract store for metadata objects. The exact way by which the physical
+ * storing of data is done is implemented by store implementations derived from this common base class.
  * 
  * For each object type, a store must be defined as follows:
  * 
@@ -43,6 +41,7 @@ import org.mycore.common.content.MCRContent;
  * MCR.IFS2.Store.DocPortal_document.ForceXML=true (which is default)
  * 
  * @author Frank Lützenkirchen
+ * @author Christoph Neidahl (OPNA2608)
  */
 public abstract class MCRMetadataStore extends MCRStore {
 
@@ -130,14 +129,12 @@ public abstract class MCRMetadataStore extends MCRStore {
      *         metadata object
      */
     public MCRMetadata retrieve(int id) throws MCRPersistenceException {
-        LOGGER.info("Retrieving {} from store {}.", this.createIDWithLeadingZeros(id), this.getID());
+        LOGGER.debug("Retrieving {} from store {}.", this.createIDWithLeadingZeros(id), this.getID());
         if (exists(id)) {
-            LOGGER.info("Exists.");
             MCRMetadata metadata = new MCRMetadata(this, id);
             metadata.read();
             return metadata;
         } else {
-            LOGGER.info("Doesn't exist.");
             return null;
         }
     }
@@ -207,12 +204,6 @@ public abstract class MCRMetadataStore extends MCRStore {
             return null;
         } else {
             return list.get(list.size() - 1);
-        }
-    }
-
-    protected final void checkIDPermitted(int id) throws MCRUsageException {
-        if (id < 1) {
-            throw new MCRUsageException("ID " + id + " must be >= 1!");
         }
     }
 }

@@ -30,27 +30,20 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jdom2.JDOMException;
 import org.mycore.common.MCRPersistenceException;
 import org.mycore.common.MCRSessionMgr;
 import org.mycore.common.MCRUsageException;
 import org.mycore.common.content.MCRContent;
 import org.mycore.common.content.MCRPathContent;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
+import org.xml.sax.SAXException;
 
 /**
- * TODO rewrite
- * 
- * Stores XML metadata documents (or optionally any other BLOB data) in a
- * persistent filesystem structure
- * 
- * For each object type, a store must be defined as follows:
- * 
- * MCR.IFS2.Store.DocPortal_document.Class=org.mycore.datamodel.ifs2.MCRMetadataStore 
- * MCR.IFS2.Store.DocPortal_document.BaseDir=/foo/bar
- * MCR.IFS2.Store.DocPortal_document.SlotLayout=4-2-2 
- * MCR.IFS2.Store.DocPortal_document.ForceXML=true (which is default)
+ * An {@link MCRMetadataStore} extension that uses a local, unversioned storage implementation.
  * 
  * @author Frank Lützenkirchen
+ * @author Christoph Neidahl (OPNA2608)
  */
 
 public class MCRXMLMetadataStore extends MCRMetadataStore {
@@ -60,6 +53,9 @@ public class MCRXMLMetadataStore extends MCRMetadataStore {
     @Override
     protected void createContent(MCRMetadata metadata, MCRContent content) throws MCRPersistenceException {
         checkMetadata(metadata, false);
+        if (forceXML) {
+            content = checkContent(content);
+        }
 
         try {
             Path path = getSlot(metadata.getID());
@@ -84,6 +80,9 @@ public class MCRXMLMetadataStore extends MCRMetadataStore {
     @Override
     protected void updateContent(MCRMetadata metadata, MCRContent content) throws MCRPersistenceException {
         checkMetadata(metadata, true);
+        if (forceXML) {
+            content = checkContent(content);
+        }
 
         try {
             Path path = getSlot(metadata.getID());
@@ -179,6 +178,14 @@ public class MCRXMLMetadataStore extends MCRMetadataStore {
             throw new MCRPersistenceException("ID does not exist in store!");
         } else if (!shouldExist && doesExist) {
             throw new MCRPersistenceException("ID already exists in store!");
+        }
+    }
+
+    protected MCRContent checkContent(MCRContent content) throws MCRPersistenceException {
+        try {
+            return content.ensureXML();
+        } catch (SAXException | IOException | JDOMException e) {
+            throw new MCRPersistenceException("Requested content failed to parse as XML!", e);
         }
     }
 }
