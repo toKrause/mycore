@@ -31,7 +31,7 @@ import org.mycore.common.content.MCRContent;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
 
 /**
- * An object-focused, generic interface to {@link MCRMetadataStore} extensions.</br>
+ * An object-focused, generic interface to {@link MCRMetadataStore} extensions.<br />
  * 
  * An MCRMetadata instance represents an object that is (to be) stored in a
  * MCRMetadataStore. It has an immutable set of information about its associated store, name and ID.
@@ -170,7 +170,7 @@ public class MCRMetadata {
     /**
      * Communicates with the specified store instance to read this object's content.
      * 
-     * @return the content stored under this object ID & revision
+     * @return the content stored under this object ID &amp; revision
      * @throws MCRPersistenceException
      *     if the store encounters a problem while reading the stored object with this ID and revision
      */

@@ -96,12 +96,14 @@ public class MCRMetadataVersion {
     /**
      * Creates a new metadata version info object
      * 
-     * @param vm
+     * @param metadata
      *            the metadata document this version belongs to
-     * @param logEntry
-     *            the log entry from SVN holding data on this version
-     * @param type
-     *            the type of commit
+     * @param revision
+     *            the version of the metadata document
+     * @param user
+     *            who committed this version
+     * @param date
+     *            when this version was created
      */
     public MCRMetadataVersion(MCRMetadata metadata, long revision, String user, Date date,
         MCRMetadataVersionState state) {

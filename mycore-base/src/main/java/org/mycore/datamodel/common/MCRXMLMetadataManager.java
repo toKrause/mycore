@@ -812,7 +812,7 @@ public class MCRXMLMetadataManager {
 
     /**
      * Returns the time when the xml data of a MCRObject was last modified.
-     * @return output of {@link MCRStoredMetadata#getLastModified()}
+     * @return output of {@link MCRMetadata#getLastModified()}
      * @throws IOException thrown by {@link MCRMetadataStore#retrieve(int)}
      */
     public long getLastModified(MCRObjectID id) throws IOException {
