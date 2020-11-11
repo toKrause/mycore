@@ -21,8 +21,6 @@ package org.mycore.datamodel.ifs2;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mycore.common.MCRPersistenceException;
@@ -88,14 +86,12 @@ public class MCRMetadata {
      * 
      *  @see #store
      */
-    @Nullable
     protected Long revision;
 
     /** The current revision's file contents.
      * May be <code>null</code> if no CRU method has been called yet, or if
      * {@link #delete()} has been called successfully.
      */
-    @Nullable
     protected MCRContent content;
 
     /** The current revision's commit date.
@@ -103,7 +99,6 @@ public class MCRMetadata {
      * {@link #delete()} method has been called and the linked store's implementation of
      * {@link MCRMetadataStore#deleteContent(MCRMetadata)} purges all versioning-related information.
      */
-    @Nullable
     protected Date date;
 
     /**

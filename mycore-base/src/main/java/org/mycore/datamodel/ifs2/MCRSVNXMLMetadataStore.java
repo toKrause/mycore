@@ -28,11 +28,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -245,7 +244,8 @@ public class MCRSVNXMLMetadataStore extends MCRXMLMetadataStore {
      */
     private void commit(MCRMetadataVersionState type, MCRMetadata metadata, MCRContent content)
         throws MCRPersistenceException {
-        String commitMsg = type.toString().toLowerCase() + " metadata object " + metadata.getFullID() + " in store";
+        String commitMsg = type.toString().toLowerCase(Locale.ROOT) + " metadata object " + metadata.getFullID()
+            + " in store";
         SVNCommitInfo info;
         try {
             SVNRepository repository = getRepository();
@@ -436,7 +436,6 @@ public class MCRSVNXMLMetadataStore extends MCRXMLMetadataStore {
     }
 
     @Override
-    @Nullable
     public MCRContent readContent(MCRMetadata metadata) throws MCRPersistenceException {
         if (metadata.getRevision() == null) {
             MCRContent content = super.readContent(metadata);
