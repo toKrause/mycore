@@ -55,7 +55,6 @@ import org.mycore.common.content.MCRJDOMContent;
 import org.mycore.datamodel.ifs2.MCRMetadata;
 import org.mycore.datamodel.ifs2.MCRMetadataStore;
 import org.mycore.datamodel.ifs2.MCRMetadataVersion;
-import org.mycore.datamodel.ifs2.MCRMetadataVersion.MCRMetadataVersionState;
 import org.mycore.datamodel.ifs2.MCRObjectIDFileSystemDate;
 import org.mycore.datamodel.ifs2.MCRStore;
 import org.mycore.datamodel.ifs2.MCRStoreCenter;
@@ -538,7 +537,7 @@ public class MCRXMLMetadataManager {
     public MCRContent retrieveContent(MCRObjectID mcrid) throws IOException {
         MCRContent metadata;
         MCRMetadata storedMetadata = retrieveStoredMetadata(mcrid);
-        if (storedMetadata == null || storedMetadata.getVersion().getState() == MCRMetadataVersionState.DELETED) {
+        if (storedMetadata == null || storedMetadata.isDeleted()) {
             return null;
         }
         metadata = storedMetadata.read();
@@ -595,7 +594,7 @@ public class MCRXMLMetadataManager {
      *         the given object or null if the id is null or the metadata
      *         store doesn't support versioning
      */
-    public List<MCRMetadataVersion> listRevisions(MCRObjectID id) throws IOException {
+    public List<MCRMetadataVersion> listRevisions(MCRObjectID id) throws MCRPersistenceException {
         return getStore(id, true).getMetadataVersions(id.getNumberAsInteger());
     }
 
@@ -604,11 +603,7 @@ public class MCRXMLMetadataManager {
             return null;
         }
         MCRMetadataStore metadataStore = getStore(id, true);
-        if (!(metadataStore instanceof MCRSVNXMLMetadataStore)) {
-            return null;
-        }
-        MCRSVNXMLMetadataStore verStore = (MCRSVNXMLMetadataStore) metadataStore;
-        return verStore.retrieve(id.getNumberAsInteger());
+        return metadataStore.retrieve(id.getNumberAsInteger());
     }
 
     /**

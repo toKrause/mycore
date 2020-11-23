@@ -53,7 +53,6 @@ public class MCRObjectIDTest extends MCRStoreTestCase {
         assertEquals("First id should be int 1", 1, id1.getNumberAsInteger());
         MCRObjectID id2 = MCRObjectID.getNextFreeId(BASE_ID);
         assertEquals("Second id should be int 2", 2, id2.getNumberAsInteger());
-        System.out.println("ID: " + id2.toString());
         getStore().create(id2, new Document(new Element("test")), new Date());
         MCRObjectID id3 = MCRObjectID.getNextFreeId(BASE_ID);
         assertEquals("Second id should be int 3", 3, id3.getNumberAsInteger());

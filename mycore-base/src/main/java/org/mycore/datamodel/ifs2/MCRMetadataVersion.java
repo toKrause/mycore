@@ -107,8 +107,7 @@ public class MCRMetadataVersion {
      */
     public MCRMetadataVersion(MCRMetadata metadata, long revision, String user, Date date,
         MCRMetadataVersionState state) {
-        LOGGER.debug("Instantiating version info for {}_{}, revision {}.", metadata.getBase(), metadata.getID(),
-            revision);
+        LOGGER.debug("Instantiating version info for {} in revision {}.", metadata.getFullID(), revision);
         this.metadata = metadata;
         this.revision = revision;
         this.user = user;
@@ -136,8 +135,6 @@ public class MCRMetadataVersion {
         return state;
     }
 
-    /* HELPERS / COMPATIBILITY */
-
     /**
      * For compatibility, used by existing tests and {@link MCRSVNXMLMetadataStore}
      * instead of {@link MCRMetadataVersionState}.
@@ -149,7 +146,7 @@ public class MCRMetadataVersion {
     }
 
     /**
-     * Convenience. Calls the linked object's restore shorthand.
+     * Shortcut, calls the linked object's restore shorthand.
      */
     public void restore() {
         getMetadata().restore();

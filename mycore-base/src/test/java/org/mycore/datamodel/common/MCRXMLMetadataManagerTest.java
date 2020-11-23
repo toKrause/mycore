@@ -187,11 +187,6 @@ public class MCRXMLMetadataManagerTest extends MCRStoreTestCase {
         assertEquals("Store should not contain any objects.", 0, getStore().listIDs().size());
         getStore().create(MyCoRe_document_00000001.id, MyCoRe_document_00000001.blob,
             MyCoRe_document_00000001.lastModified);
-        List<String> ids = getStore().listIDs();
-        System.out.println("retrieveAllIDs - Found IDs: " + ids.size());
-        for (String id : ids) {
-            System.out.println(id);
-        }
         assertTrue("Store does not contain object " + MyCoRe_document_00000001.id,
             getStore().listIDs().contains(MyCoRe_document_00000001.id.toString()));
     }

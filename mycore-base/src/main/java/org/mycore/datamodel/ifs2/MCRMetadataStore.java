@@ -30,12 +30,12 @@ import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.common.content.MCRContent;
 
 /**
- * Describes an abstract store for metadata objects. The exact way by which the physical
- * storing of data is done is implemented by store implementations derived from this common base class.
+ * Describes an abstract store for metadata objects. The exact way by which the data is
+ * physically stored is up to extensions of this base class to implement.
  * 
  * For each object type, a store must be defined as follows:
  * 
- * MCR.IFS2.Store.DocPortal_document.Class=org.mycore.datamodel.ifs2.MCRMetadataStore 
+ * MCR.IFS2.Store.DocPortal_document.Class=org.mycore.datamodel.ifs2.MCRXMLMetadataStore 
  * MCR.IFS2.Store.DocPortal_document.BaseDir=/foo/bar
  * MCR.IFS2.Store.DocPortal_document.SlotLayout=4-2-2 
  * MCR.IFS2.Store.DocPortal_document.ForceXML=true (which is default)

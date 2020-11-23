@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,13 +55,10 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     private MCRObject l31;
 
-    private String borkingTest;
-
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         MCREventManager.instance().clear();
         MCREventManager.instance().addEventHandler("MCRObject", new MCRXMLMetadataEventHandler());
         MCREventManager.instance().addEventHandler("MCRObject", new MCRLinkTableEventHandler());
@@ -74,19 +70,13 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
         l22 = createObject("test_document_00000006", l11.getId());
         l31 = createObject("test_document_00000007", l21.getId());
 
-        try {
-            MCRMetadataManager.create(root);
-            MCRMetadataManager.create(l11);
-            MCRMetadataManager.create(l12);
-            MCRMetadataManager.create(l13);
-            MCRMetadataManager.create(l21);
-            MCRMetadataManager.create(l22);
-            MCRMetadataManager.create(l31);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        borkingTest = "unknown";
+        MCRMetadataManager.create(root);
+        MCRMetadataManager.create(l11);
+        MCRMetadataManager.create(l12);
+        MCRMetadataManager.create(l13);
+        MCRMetadataManager.create(l21);
+        MCRMetadataManager.create(l22);
+        MCRMetadataManager.create(l31);
     }
 
     private MCRObject createObject(String id, MCRObjectID parent) {
@@ -101,7 +91,6 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void getAncestors() {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         MCRObject doc = MCRMetadataManager.retrieveMCRObject(MCRObjectID.getInstance("test_document_00000007"));
         List<MCRObject> ancestors = MCRObjectUtils.getAncestors(doc);
         assertEquals(3, ancestors.size());
@@ -112,7 +101,6 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void getAncestorsAndSelf() {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         MCRObject doc = MCRMetadataManager.retrieveMCRObject(MCRObjectID.getInstance("test_document_00000007"));
         List<MCRObject> ancestors = MCRObjectUtils.getAncestorsAndSelf(doc);
         assertEquals(4, ancestors.size());
@@ -124,7 +112,6 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void getRoot() {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         MCRObject doc = MCRMetadataManager.retrieveMCRObject(MCRObjectID.getInstance("test_document_00000006"));
         MCRObject root = MCRObjectUtils.getRoot(doc);
         assertNotNull(root);
@@ -133,7 +120,6 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void getDescendants() {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         MCRObject doc = MCRMetadataManager.retrieveMCRObject(MCRObjectID.getInstance("test_document_00000001"));
         List<MCRObject> descendants = MCRObjectUtils.getDescendants(doc);
         assertEquals(6, descendants.size());
@@ -149,7 +135,6 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void getDescendantsAndSelf() {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         MCRObject doc = MCRMetadataManager.retrieveMCRObject(MCRObjectID.getInstance("test_document_00000001"));
         List<MCRObject> descendants = MCRObjectUtils.getDescendantsAndSelf(doc);
         assertEquals(7, descendants.size());
@@ -157,10 +142,9 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void removeLink() throws MCRAccessException {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         // remove parent link
         assertTrue(MCRObjectUtils.removeLink(l22, l11.getId()));
-        MCRMetadataManager.update(l11);
+        MCRMetadataManager.update(l11); // TODO was added, is this needed?
         MCRMetadataManager.update(l22);
         l11 = MCRMetadataManager.retrieveMCRObject(l11.getId());
         l22 = MCRMetadataManager.retrieveMCRObject(l22.getId());
@@ -185,7 +169,6 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
 
     @Test
     public void removeLinks() throws MCRAccessException {
-        borkingTest = Thread.currentThread().getStackTrace()[1].getMethodName();
         // add metadata links to test
         addLinksToL22();
         assertEquals(2, l22.getMetadata().stream("links").count());
@@ -219,21 +202,14 @@ public class MCRObjectUtilsTest extends MCRStoreTestCase {
     @Override
     @After
     public void tearDown() throws Exception {
-        try {
-            MCRMetadataManager.delete(l31);
-            MCRMetadataManager.delete(l22);
-            MCRMetadataManager.delete(l21);
-            MCRMetadataManager.delete(l13);
-            MCRMetadataManager.delete(l12);
-            MCRMetadataManager.delete(l11);
-            MCRMetadataManager.delete(root);
-            super.tearDown();
-        } catch (Exception e) {
-            e.printStackTrace();
-            LogManager.getLogger().error("Failing test transcending into @After: {}!", borkingTest);
-            throw e;
-        }
-        LogManager.getLogger().info("Test {} ran successfully.", borkingTest);
+        MCRMetadataManager.delete(l31);
+        MCRMetadataManager.delete(l22);
+        MCRMetadataManager.delete(l21);
+        MCRMetadataManager.delete(l13);
+        MCRMetadataManager.delete(l12);
+        MCRMetadataManager.delete(l11);
+        MCRMetadataManager.delete(root);
+        super.tearDown();
     }
 
     @Override

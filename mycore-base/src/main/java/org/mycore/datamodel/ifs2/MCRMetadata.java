@@ -268,8 +268,6 @@ public class MCRMetadata {
         return date;
     }
 
-    /* HELPERS / COMPATIBILITY */
-
     public String getFullID() {
         return fullID;
     }
@@ -297,7 +295,7 @@ public class MCRMetadata {
     }
 
     /**
-     * Shorthand for reading this revision's content and running {@link #update(MCRContent)} on the latest
+     * Shortcut for reading this revision's content and running {@link #update(MCRContent)} on the latest
      * revision of this object
      * 
      * @throws MCRPersistenceException

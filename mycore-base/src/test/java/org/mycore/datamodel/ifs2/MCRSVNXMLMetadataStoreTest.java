@@ -49,16 +49,10 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
 
     @Test
     public void createDocument() throws Exception {
-        System.out.println("createDocument");
         Document testXmlDoc = new Document(new Element("root"));
         MCRContent testContent = new MCRJDOMContent(testXmlDoc);
 
-        System.out.println("Highest: " + getVersStore().getHighestStoredID());
         int nextID = getVersStore().getNextFreeID();
-        System.out.println("Next: " + nextID);
-        System.out.println("Exists already: " + getVersStore().exists(nextID));
-        assertFalse(getVersStore().exists(nextID));
-
         MCRMetadata versionedMetadata = getVersStore().create(nextID, testContent);
         assertTrue(getVersStore().exists(nextID));
         assertNotNull(versionedMetadata);
@@ -76,7 +70,7 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
 
         MCRMetadata vm3 = getVersStore().create(new MCRJDOMContent(testXmlDoc));
         assertTrue(vm3.getID() > versionedMetadata.getID());
-        // revision == SVN revision??
+        // TODO revision == SVN revision??
         // assertTrue(vm3.getRevision() > versionedMetadata.getRevision());
     }
 
@@ -91,12 +85,8 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
         assertNotNull(vm1);
         assertEquals(new MCRJDOMContent(xml1).asString(), xml2.asString());
         getVersStore().create(id + 1, new MCRJDOMContent(xml1));
-        try {
-            MCRContent xml3 = getVersStore().retrieve(id + 1).read();
-            assertEquals(new MCRJDOMContent(xml1).asString(), xml3.asString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MCRContent xml3 = getVersStore().retrieve(id + 1).read();
+        assertEquals(new MCRJDOMContent(xml1).asString(), xml3.asString());
     }
 
     @Test
@@ -129,15 +119,8 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
     @Test
     public void retrieve() throws Exception {
         Document xml1 = new Document(new Element("root"));
-        int id;
-        try {
-            id = getVersStore().create(new MCRJDOMContent(xml1)).getID();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        MCRMetadata sm1 = getVersStore().retrieve(id);
-        MCRContent xml2 = sm1.read();
+        int id = getVersStore().create(new MCRJDOMContent(xml1)).getID();
+        MCRContent xml2 = getVersStore().retrieve(id).read();
         assertEquals(new MCRJDOMContent(xml1).asString(), xml2.asString());
     }
 
@@ -146,14 +129,14 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
         Document xml1 = new Document(new Element("bingo"));
         MCRMetadata vm = getVersStore().create(new MCRJDOMContent(xml1));
         long baseRev = vm.getRevision();
-        // SVN + XML decoupled, obsoleted
+        // TODO SVN + XML decoupled, obsoleted
         // assertTrue(vm.isUpToDate());
 
         List<MCRMetadataVersion> versions = vm.listVersions();
         assertNotNull(versions);
         assertEquals(1, versions.size());
         MCRMetadataVersion mv = versions.get(0);
-        // MCRMetadata constructed on-the-fly, not the same object references but same contents
+        // TODO MCRMetadata constructed on-the-fly, not the same object references but same contents
         // assertSame(mv.getMetadata(), vm);
         assertEquals(mv.getMetadata().read().asString(), vm.read().asString());
         assertEquals(baseRev, mv.getRevision());
@@ -165,7 +148,7 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
         Document xml2 = new Document(new Element("bango"));
         vm.update(new MCRJDOMContent(xml2));
         assertTrue(vm.getRevision() > baseRev);
-        // SVN + XML decoupled, obsoleted(??)
+        // TODO SVN + XML decoupled, obsoleted(??)
         // assertTrue(vm.isUpToDate());
 
         versions = vm.listVersions();
@@ -204,7 +187,7 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
 
         bzzz();
         versions.get(1).restore();
-        // MCRMetadata self-updates on CUD-invocations
+        // TODO MCRMetadata self-updates on CUD-invocations
         // assertTrue(vm.getRevision() > versions.get(2).getRevision());
         // assertTrue(vm.getLastModified().after(versions.get(2).getDate()));
         assertTrue(vm.getRevision() == versions.get(2).getRevision());
@@ -232,7 +215,7 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
         assertEquals(MCRMetadataVersionState.DELETED, versions.get(2).getState());
         assertEquals(MCRMetadataVersionState.CREATED, versions.get(3).getState());
         versions.get(1).restore();
-        // MCRMetadata objects self-update when invoking their CRUD-methods
+        // TODO MCRMetadata objects self-update when invoking their CRUD-methods
         // assertEquals("bango", vm.read().asXML().getRootElement().getName());
         assertEquals("bango",
             getVersStore().getMetadataVersionLast(vm.getID()).getMetadata().read().asXML().getRootElement().getName());
@@ -268,14 +251,9 @@ public class MCRSVNXMLMetadataStoreTest extends MCRIFS2VersioningTestCase {
         }
         assertTrue(cannotRestoreDeleted);
 
-        try {
         v1.restore();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
         assertFalse(vm.isDeletedInRepository());
-        // vm -> deleted revision, contains no MCRContent
+        // TODO vm -> deleted revision, contains no MCRContent
         // assertEquals(root.getName(), vm.read().asXML().getRootElement().getName());
         assertEquals(root.getName(), store.retrieve(vm.getID()).read().asXML().getRootElement().getName());
     }
