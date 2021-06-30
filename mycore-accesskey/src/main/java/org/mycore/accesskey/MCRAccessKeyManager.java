@@ -37,6 +37,9 @@ import org.mycore.accesskey.exception.MCRAccessKeyInvalidTypeException;
 import org.mycore.accesskey.exception.MCRAccessKeyInvalidValueException;
 import org.mycore.accesskey.exception.MCRAccessKeyNotFoundException;
 
+/**
+ * Methods to manage {@MCRAccessKey}.
+ */
 public final class MCRAccessKeyManager {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -45,7 +48,7 @@ public final class MCRAccessKeyManager {
      * Returns all access keys for given {@link MCRObjectID}.
      *
      * @param objectId the {@link MCRObjectID}
-     * @return access keys as list
+     * @return {@link MCRAccessKey} list
      */
     public static synchronized List<MCRAccessKey> getAccessKeys(final MCRObjectID objectId) {
         final EntityManager em = MCREntityManagerProvider.getCurrentEntityManager();
@@ -58,7 +61,7 @@ public final class MCRAccessKeyManager {
      * Checks the quality of the permission.
      *
      * @param type permission type
-     * @return valid or not
+     * @return true if valid or false
      */
     private static boolean isValidType(String type) {
         return (type.equals(MCRAccessManager.PERMISSION_READ)
@@ -69,15 +72,15 @@ public final class MCRAccessKeyManager {
      * Checks the quality of the value.
      *
      * @param value the value 
-     * @return valid or not
+     * @return true if valid or false
      */
     private static boolean isValidValue(String value) {
         return value.length() > 0;
     }
 
     /**
-     * Adds a access keys for given {@link MCRObjectID}.
-     * If there is no value collision
+     * Adds a {@link MCRAccessKey} for given {@link MCRObjectID}.
+     * Checks for a {@link MCRAccessKey} collision
      *
      * @param accessKey the access key
      * @throws MCRAccessKeyException key is not valid
@@ -108,10 +111,11 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-    * Update access keys.
+    * Adds {@link MCRAccessKey} list for given {@link MCRObjectID}.
     *
     * @param objectId the {@link MCRObjectID}
-    * @param accessKeys the access keys as list
+    * @param accessKeys the {@link MCRAccessKey} list
+    * @throws MCRAccessKeyException key is not valid
     */
     public static synchronized void addAccessKeys(final MCRObjectID objectId, final List<MCRAccessKey> accessKeys)
         throws MCRAccessKeyException {
@@ -123,7 +127,7 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-     * Deletes all access keys.
+     * Deletes all {@link MCRAccessKey}.
      */
     public static void clearAccessKeys() {
         final EntityManager em = MCREntityManagerProvider.getCurrentEntityManager();
@@ -132,7 +136,7 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-     * Deletes the all access keys for given {@link MCRObjectID}.
+     * Deletes the all {@link MCRAccessKey} for given {@link MCRObjectID}.
      *
      * @param objectId the {@link MCRObjectID}
      */
@@ -144,7 +148,7 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-     * Deletes access keys for given {@link MCRObjectID} and value.
+     * Deletes {@link MCRAccessKey} for given {@link MCRObjectID} and value.
      *
      * @param objectId the {@link MCRObjectID}
      * @param value the value
@@ -161,10 +165,9 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-     * Deletes access key.
+     * Deletes {@link MCRAccessKey}.
      *
-     * @param id the id of the key
-     * @throws MCRException if key does not exists
+     * @param accessKey the {@link MCRAccessKey}
      */
     public static void removeAccessKey(final MCRAccessKey accessKey) {
         final EntityManager em = MCREntityManagerProvider.getCurrentEntityManager();
@@ -173,11 +176,11 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-     * Updates access key.
+     * Updates {@link MCRAccessKey}
      *
-     * @param objectId id of the key to be updated
+     * @param objectId {@link MCRAccessKey} of the key to be updated
      * @param currentValue current value of the key to be updated
-     * @param newAccessKey the new access key
+     * @param newAccessKey the new {@link MCRAccessKey}
      * @throws MCRAccessKeyException if update fails
      */
     public static synchronized void updateAccessKey(final MCRObjectID objectId,
@@ -240,11 +243,11 @@ public final class MCRAccessKeyManager {
     }
 
     /**
-     * Return the access key for given {@link MCRObjectID} and value.
+     * Return the {@link MCRAccessKey} for given {@link MCRObjectID} and value.
      *
      * @param objectId the {@link MCRObjectID}
      * @param value the key value
-     * @return access key list
+     * @return the {@link MCRAccessKey}
      */
     public static synchronized MCRAccessKey getAccessKeyByValue(final MCRObjectID objectId, final String value) {
         final EntityManager em = MCREntityManagerProvider.getCurrentEntityManager();
@@ -262,7 +265,7 @@ public final class MCRAccessKeyManager {
      *
      * @param objectId the {@link MCRObjectID}
      * @param type the type
-     * @return access key list
+     * @return {@link MCRAccessKey} list
      */
     public static synchronized List<MCRAccessKey> getAccessKeysByType(final MCRObjectID objectId, final String type) {
         final EntityManager em = MCREntityManagerProvider.getCurrentEntityManager();

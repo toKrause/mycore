@@ -33,6 +33,9 @@ import org.mycore.accesskey.MCRAccessKeyManager;
 import org.mycore.accesskey.MCRAccessKeyUserUtils;
 import org.mycore.accesskey.backend.MCRAccessKey;
 
+/**
+ * Strategy for {@link MCRAccessKey}.
+ */
 public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -47,6 +50,13 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
         return checkObjectPermission(objectId, permission);
     }
 
+    /**
+     * Checks access for an object.
+     *
+     * @param objectId the {@link MCRObjectID}
+     * @param permission permission type
+     * @return true if the access is permitted or false if not
+     */
     private boolean checkObjectPermission(MCRObjectID objectId, String permission) {
         LOGGER.debug("check object {} permission {}.", objectId, permission);
         boolean isWritePermission = MCRAccessManager.PERMISSION_WRITE.equals(permission);
@@ -54,6 +64,14 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
         return (isWritePermission || isReadPermission) && userHasValidAccessKey(objectId, isReadPermission);
     }
 
+    /**
+     * Checks if a user has a valid {@link MCRAccessKey} for given {@link MCRObjectID} and permission.
+     * If there is an invalid {@link MCRAccessKey} attribute, the attribute will be deleted.
+     *
+     * @param objectId the {@link MCRObjectID}
+     * @param isReadPermission permission type
+     * @return if {@MCRAccessKey} is valid or not for permssion.
+    */
     private static boolean userHasValidAccessKey(MCRObjectID objectId, boolean isReadPermission) {
         final String userKey = MCRAccessKeyUserUtils.getAccessKey(objectId);
         if (userKey != null) {
@@ -71,6 +89,15 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
         return false;
     }
 
+    /**
+     * Checks access for a derivate. 
+     * If no access key exists for the derivate, the access key for the parent object is checked.
+     *
+     * @param derivateId the {@link MCRObjectID} of the derivate
+     * @param objectId the {@link MCRObjectID} of the parent
+     * @param permission permission type
+     * @return true if the access is permitted or false if not
+     */
     private boolean checkDerivatePermission(MCRObjectID derivateId, MCRObjectID objectId, String permission) {
         LOGGER.debug("check derivate {}, object {} permission {}.", derivateId, objectId, permission);
         boolean isWritePermission = MCRAccessManager.PERMISSION_WRITE.equals(permission);

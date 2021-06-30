@@ -91,6 +91,12 @@ public class MCRAccessKeyEventHandler extends MCREventHandlerBase {
         handleBaseDeleted(der);
     }
 
+    /**
+     * Add all {@link MCRAccessKey} from servflags to object.
+     *
+     * Then the servlag will be deleted.
+     * @param obj the {@link MCRBase}
+     */
     private void handleBaseCreated(final MCRBase obj) {
         final MCRObjectService service = obj.getService();
         try {
@@ -105,11 +111,22 @@ public class MCRAccessKeyEventHandler extends MCREventHandlerBase {
         service.removeFlags(MCRAccessKeyTransformer.ACCESS_KEY_TYPE);
     }
 
-    private void handleBaseUpdated(final MCRBase obj) { //Nothing to do, only remove keys from flags
+    /**
+     * Removes {@link MCRAccessKey} string for servflags.
+     *
+     * {@link MCRAccessKey} string will not handled
+     * @param obj the {@link MCRBase}
+     */
+    private void handleBaseUpdated(final MCRBase obj) {
         final MCRObjectService service = obj.getService();
         service.removeFlags(MCRAccessKeyTransformer.ACCESS_KEY_TYPE);
     }
 
+    /**
+     * Deletes all {@link MCRAccessKey} for given {@link MCRBase}
+     *
+     * @param obj the {@link MCRBase}
+     */
     private void handleBaseDeleted(final MCRBase obj) {
         MCRAccessKeyManager.clearAccessKeys(obj.getId());
     }

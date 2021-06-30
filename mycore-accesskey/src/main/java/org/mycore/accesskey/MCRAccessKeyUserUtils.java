@@ -29,32 +29,36 @@ import org.mycore.accesskey.exception.MCRAccessKeyNotFoundException;
 import org.mycore.user2.MCRUser;
 import org.mycore.user2.MCRUserManager;
 
+/**
+ * Methods for setting and removing {@link MCRAccessKey} for users.
+ */
 public class MCRAccessKeyUserUtils {
 
+    /**
+     * Prefix for user attribute name for value
+    */
     private static final String ACCESS_KEY_PREFIX = "acckey_";
 
     /**
-     * Add the access key to the current {@link MCRUser} for given {@link MCRObjectID}.
+     * Adds the value of a {@link MCRAccessKey} as user attribute to the current {@link MCRUser} for a {@link MCRObjectID}.
      *
-     * @param mcrObjectId the {@link MCRObjectID}
-     * @param accessKey the access key
-     * @throws MCRAccessKeyNotFoundException
-     *             if an error was occured
+     * @param objectId the {@link MCRObjectID}
+     * @param value the value of a {@link MCRAccessKey}
+     * @throws MCRAccessKeyNotFoundException if there is no matching {@link MCRAccessKey} with the same value.
      */
-    public static synchronized void addAccessKey(final MCRObjectID mcrObjectId, final String accessKey) 
+    public static synchronized void addAccessKey(final MCRObjectID objectId, final String value) 
         throws MCRAccessKeyNotFoundException {
         final MCRUser user = MCRUserManager.getCurrentUser();
-        addAccessKey(user, mcrObjectId, accessKey);
+        addAccessKey(user, objectId, value);
     }
 
     /**
-     * Add the access key to the current {@link MCRUser} for given {@link MCRObjectID}.
+     * Adds the value of a {@link MCRAccessKey} as user attribute to a {@link MCRUser} for a {@link MCRObjectID}.
      *
-     * @param user the {@link MCRUser} the key should assigned
+     * @param user the {@link MCRUser} the value should assigned
      * @param objectId the {@link MCRObjectID}
-     * @param value the value of the access key
-     * @throws MCRAccessKeyException
-     *             if an error was occured
+     * @param value the value of a {@link MCRAccessKey}
+     * @throws MCRAccessKeyNotFoundException if there is no matching {@link MCRAccessKey} with the same value.
      */
     public static synchronized void addAccessKey(final MCRUser user, final MCRObjectID objectId, final String value) 
         throws MCRAccessKeyNotFoundException {
@@ -72,32 +76,32 @@ public class MCRAccessKeyUserUtils {
     }
 
     /**
-     * Deletes the access key from current {@link MCRUser} for given {@link MCRObjectID}.
+     * Deletes access key value user attribute from current {@link MCRUser} for a {@link MCRObjectID}.
      *
-     * @param mcrObjectId the {@link MCRObjectID}
+     * @param objectId the {@link MCRObjectID}
      */
-    public static synchronized void deleteAccessKey(final MCRObjectID mcrObjectId) {
-        deleteAccessKey(MCRUserManager.getCurrentUser(), mcrObjectId);
+    public static synchronized void deleteAccessKey(final MCRObjectID objectId) {
+        deleteAccessKey(MCRUserManager.getCurrentUser(), objectId);
     }
 
     /**
-     * Deletes the access key from given {@link MCRUser} for {@link MCRObjectID}.
+     * Deletes the access key value user attribute from given {@link MCRUser} for {@link MCRObjectID}.
      *
      * @param user the {@link MCRUser}
-     * @param mcrObjectId the {@link MCRObjectID}
+     * @param objectId the {@link MCRObjectID}
      */
-    public static synchronized void deleteAccessKey(final MCRUser user, final MCRObjectID mcrObjectId) {
-        user.getAttributes().removeIf(ua -> ua.getName().equals(ACCESS_KEY_PREFIX + mcrObjectId.toString()));
+    public static synchronized void deleteAccessKey(final MCRUser user, final MCRObjectID objectId) {
+        user.getAttributes().removeIf(ua -> ua.getName().equals(ACCESS_KEY_PREFIX + objectId.toString()));
         MCRUserManager.updateUser(user);
-        MCRAccessManager.invalidPermissionCache(mcrObjectId.toString(), MCRAccessManager.PERMISSION_READ);
-        MCRAccessManager.invalidPermissionCache(mcrObjectId.toString(), MCRAccessManager.PERMISSION_WRITE);
+        MCRAccessManager.invalidPermissionCache(objectId.toString(), MCRAccessManager.PERMISSION_READ);
+        MCRAccessManager.invalidPermissionCache(objectId.toString(), MCRAccessManager.PERMISSION_WRITE);
     }
 
     /**
-     * Fetches access key value from user attribute.
+     * Fetches access key value from user attribute for a {@link MCRObjectID}.
      *
-     * @param mcrObjectId the {@link MCRObjectID}
-     * @return access key value or null
+     * @param objectId the {@link MCRObjectID}
+     * @return user attribute value or null
      */
     public static synchronized String getAccessKey(MCRObjectID objectId) {
         return MCRSessionMgr.getCurrentSession().getUserInformation()

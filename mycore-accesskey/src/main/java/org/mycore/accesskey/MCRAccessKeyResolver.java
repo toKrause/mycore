@@ -26,14 +26,14 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
-import org.jdom2.transform.JDOMSource;
 import org.jdom2.Element;
+import org.jdom2.transform.JDOMSource;
 
-import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.accesskey.backend.MCRAccessKey;
+import org.mycore.datamodel.metadata.MCRObjectID;
 
 /**
- * This resolver can be used to return a JSON-String with {@link MCRAccessKey} for an given {@link MCRObjectID}.
+ * Returns a JSON-String with {@link MCRAccessKey} for an given {@link MCRObjectID}.
  */
 public class MCRAccessKeyResolver implements URIResolver {
     
