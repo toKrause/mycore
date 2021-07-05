@@ -37,7 +37,7 @@ public class MCRAccessKeyUserUtils {
     /**
      * Prefix for user attribute name for value
     */
-    private static final String ACCESS_KEY_PREFIX = "acckey_";
+    public static final String ACCESS_KEY_PREFIX = "acckey_";
 
     /**
      * Adds the value of a {@link MCRAccessKey} as user attribute to the current {@link MCRUser} for a {@link MCRObjectID}.
@@ -98,13 +98,17 @@ public class MCRAccessKeyUserUtils {
     }
 
     /**
-     * Fetches access key value from user attribute for a {@link MCRObjectID}.
+     * Fetches access key from user attribute for a {@link MCRObjectID}.
      *
      * @param objectId the {@link MCRObjectID}
-     * @return user attribute value or null
+     * @return {@link MCRAccessKey} or null
      */
-    public static synchronized String getAccessKey(MCRObjectID objectId) {
-        return MCRSessionMgr.getCurrentSession().getUserInformation()
+    public static synchronized MCRAccessKey getAccessKey(MCRObjectID objectId) {
+        final String userKey = MCRSessionMgr.getCurrentSession().getUserInformation()
             .getUserAttribute(ACCESS_KEY_PREFIX + objectId.toString());
+        if (userKey != null) {
+            return MCRAccessKeyManager.getAccessKeyByValue(objectId, userKey);
+        }
+        return null;
     }
 }
