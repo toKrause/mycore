@@ -83,8 +83,6 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
                     return true;
                 }
             } else {
-                MCRAccessKeyUserUtils.deleteAccessKey(objectId);
-            }
         }
         return false;
     }
