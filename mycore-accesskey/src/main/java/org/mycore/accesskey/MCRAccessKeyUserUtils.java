@@ -24,7 +24,6 @@ import org.mycore.access.MCRAccessManager;
 import org.mycore.common.MCRSessionMgr;
 import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.accesskey.backend.MCRAccessKey;
-import org.mycore.accesskey.exception.MCRAccessKeyException;
 import org.mycore.accesskey.exception.MCRAccessKeyNotFoundException;
 import org.mycore.user2.MCRUser;
 import org.mycore.user2.MCRUserManager;
@@ -40,7 +39,7 @@ public class MCRAccessKeyUserUtils {
     public static final String ACCESS_KEY_PREFIX = "acckey_";
 
     /**
-     * Adds the value of a {@link MCRAccessKey} as user attribute to the current {@link MCRUser} for a {@link MCRObjectID}.
+     * Adds the value of {@link MCRAccessKey} as user attribute to the current {@link MCRUser} for {@link MCRObjectID}.
      *
      * @param objectId the {@link MCRObjectID}
      * @param value the value of a {@link MCRAccessKey}
@@ -98,14 +97,24 @@ public class MCRAccessKeyUserUtils {
     }
 
     /**
+     * Fetches access key value from user attribute for a {@link MCRObjectID}.
+     *
+     * @param objectId the {@link MCRObjectID}
+     * @return value or null
+     */
+    public static synchronized String getUserAccessKeyValue(MCRObjectID objectId) {
+        return MCRSessionMgr.getCurrentSession().getUserInformation()
+            .getUserAttribute(ACCESS_KEY_PREFIX + objectId.toString());
+    }
+
+    /**
      * Fetches access key from user attribute for a {@link MCRObjectID}.
      *
      * @param objectId the {@link MCRObjectID}
      * @return {@link MCRAccessKey} or null
      */
     public static synchronized MCRAccessKey getAccessKey(MCRObjectID objectId) {
-        final String userKey = MCRSessionMgr.getCurrentSession().getUserInformation()
-            .getUserAttribute(ACCESS_KEY_PREFIX + objectId.toString());
+        final String userKey = getUserAccessKeyValue(objectId);
         if (userKey != null) {
             return MCRAccessKeyManager.getAccessKeyByValue(objectId, userKey);
         }

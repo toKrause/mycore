@@ -18,9 +18,7 @@
 
 package org.mycore.accesskey.strategy;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +27,6 @@ import org.mycore.access.MCRAccessManager;
 import org.mycore.access.strategies.MCRAccessCheckStrategy;
 import org.mycore.datamodel.metadata.MCRMetadataManager;
 import org.mycore.datamodel.metadata.MCRObjectID;
-import org.mycore.accesskey.MCRAccessKeyManager;
 import org.mycore.accesskey.MCRAccessKeyUserUtils;
 import org.mycore.accesskey.backend.MCRAccessKey;
 
@@ -42,39 +39,41 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
     
     @Override
     public boolean checkPermission(String id, String permission) {
-        if (MCRAccessManager.PERMISSION_WRITE.equals(permission) 
-            || MCRAccessManager.PERMISSION_READ.equals(permission)) {
-            if (MCRObjectID.isValid(id)) {
-                MCRObjectID objectId = MCRObjectID.getInstance(id);
-                if (objectId.getTypeId().equals("derivate")) {
-                    MCRAccessKey accessKey = MCRAccessKeyUserUtils.getAccessKey(objectId);
-                    if (accessKey != null) {
-                        return checkPermission(id, permission, accessKey);
-                    }
-                    objectId = MCRMetadataManager.getObjectId(objectId, 10, TimeUnit.MINUTES);
-                }
-                final MCRAccessKey accessKey = MCRAccessKeyUserUtils.getAccessKey(objectId);
+        if ((MCRAccessManager.PERMISSION_WRITE.equals(permission) 
+            || MCRAccessManager.PERMISSION_READ.equals(permission)) && MCRObjectID.isValid(id)) {
+            MCRObjectID objectId = MCRObjectID.getInstance(id);
+            if (objectId.getTypeId().equals("derivate")) {
+                LOGGER.debug("check derivate {} permission {}.", objectId.toString(), permission);
+                MCRAccessKey accessKey = MCRAccessKeyUserUtils.getAccessKey(objectId);
                 if (accessKey != null) {
-                    return checkPermission(objectId.toString(), permission, accessKey);
+                    return checkPermission(permission, accessKey);
                 }
+                objectId = MCRMetadataManager.getObjectId(objectId, 10, TimeUnit.MINUTES);
             }
+            LOGGER.debug("check object {} permission {}.", objectId.toString(), permission);
+            final MCRAccessKey accessKey = MCRAccessKeyUserUtils.getAccessKey(objectId);
+            if (accessKey != null) {
+                return checkPermission(permission, accessKey);
+            }
+        }
+        return false;
+    }
+
+    private boolean checkPermission(String permission, MCRAccessKey accessKey) {
+        if ((permission.equals(MCRAccessManager.PERMISSION_READ) 
+            && accessKey.getType().equals(MCRAccessManager.PERMISSION_READ)) 
+            || accessKey.getType().equals(MCRAccessManager.PERMISSION_WRITE)) {
+            LOGGER.debug("Access granted. User has a key to access the resource {}.",
+                accessKey.getObjectId().toString());
+            return true;
         }
         return false;
     }
 
     public boolean checkPermission(String id, String permission, MCRAccessKey accessKey) {
         LOGGER.debug("check object {} permission {}.", id, permission);
-        if (MCRObjectID.isValid(id)) {
-            if (!id.equals(accessKey.getObjectId().toString())) {
-                LOGGER.error("Access key is for {} and does not match with {}!", accessKey.getObjectId(), id);
-                return false;
-            }
-            if ((permission.equals(MCRAccessManager.PERMISSION_READ) 
-                && accessKey.getType().equals(MCRAccessManager.PERMISSION_READ)) 
-                || accessKey.getType().equals(MCRAccessManager.PERMISSION_WRITE)) {
-                LOGGER.debug("Access granted. User has a key to access the resource {}.", id);
-                return true;
-            }
+        if (MCRObjectID.isValid(id) && id.equals(accessKey.getObjectId().toString())) {
+            return checkPermission(permission, accessKey);
         }
         return false;
     }
