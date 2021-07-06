@@ -34,8 +34,6 @@ import org.mycore.access.MCRAccessException;
 import org.mycore.access.MCRAccessManager;
 import org.mycore.common.MCRException;
 import org.mycore.common.MCRJPATestCase;
-import org.mycore.common.MCRSessionMgr;
-import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.mcr.acl.accesskey.backend.MCRAccessKey;
 import org.mycore.mcr.acl.accesskey.exception.MCRAccessKeyCollisionException;
@@ -57,75 +55,101 @@ public class MCRAccessKeyManagerTest extends MCRJPATestCase {
 
     @Test(expected = MCRAccessKeyCollisionException.class)
     public void testKeyAddCollison() {
-        final MCRAccessKey accessKeyRead = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyRead = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKeyRead);
-        final MCRAccessKey accessKeyWrite = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY, MCRAccessManager.PERMISSION_WRITE);
+        final MCRAccessKey accessKeyWrite = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY, MCRAccessManager.PERMISSION_WRITE);
         MCRAccessKeyManager.addAccessKey(accessKeyWrite);
     }
 
     @Test(expected = MCRAccessKeyCollisionException.class)
     public void testKeyTypeUpdateCollison() {
-        final MCRAccessKey accessKeyRead = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyRead = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKeyRead);
-        final MCRAccessKey accessKeyNew = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, MCRAccessManager.PERMISSION_WRITE);
+        final MCRAccessKey accessKeyNew = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, 
+            MCRAccessManager.PERMISSION_WRITE);
         MCRAccessKeyManager.addAccessKey(accessKeyNew);
-        final MCRAccessKey accessKeyWrite = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_WRITE);
-        MCRAccessKeyManager.updateAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, accessKeyWrite);
+        final MCRAccessKey accessKeyWrite = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_WRITE);
+        MCRAccessKeyManager
+            .updateAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, accessKeyWrite);
     }
 
     @Test(expected = MCRAccessKeyCollisionException.class)
     public void testKeyUpdateCollison() {
-        final MCRAccessKey accessKeyRead = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyRead = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKeyRead);
-        final MCRAccessKey accessKeyNew = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyNew = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, 
+            MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKeyNew);
-        MCRAccessKeyManager.updateAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, accessKeyRead);
+        MCRAccessKeyManager
+            .updateAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY + READ_KEY, accessKeyRead);
     }
 
     @Test
     public void testCreateKey() throws MCRException, IOException {
-        final MCRAccessKey accessKeyRead = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyRead = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKeyRead);
+        final MCRAccessKey accessKey = 
+            MCRAccessKeyManager.getAccessKeyByValue(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY);
+        assertTrue(accessKey != null);
     }
 
     @Test(expected = MCRAccessKeyCollisionException.class)
     public void testDuplicate() throws MCRAccessException {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKey);
-        final MCRAccessKey accessKeySame = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeySame = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKeySame);
     }
 
     @Test
     public void testExistsKey() throws MCRAccessException {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKey);
         assertTrue(MCRAccessKeyManager.getAccessKeys(MCRObjectID.getInstance(MCR_OBJECT_ID)).size() > 0);
     }
 
     @Test
     public void testUpdateValue() throws MCRAccessException {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKey);
-        final MCRAccessKey accessKeyNew = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY + WRITE_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyNew = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY + WRITE_KEY, 
+            MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.updateAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, accessKeyNew);
-        final MCRAccessKey accessKeyUpdated = MCRAccessKeyManager.getAccessKeys(MCRObjectID.getInstance(MCR_OBJECT_ID)).get(0);
+        final MCRAccessKey accessKeyUpdated = 
+            MCRAccessKeyManager.getAccessKeys(MCRObjectID.getInstance(MCR_OBJECT_ID)).get(0);
         assertEquals(accessKeyNew.getValue(), accessKeyUpdated.getValue());
     }
 
     @Test
     public void testUpdateType() throws MCRAccessException {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKey);
-        final MCRAccessKey accessKeyNew = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_WRITE);
+        final MCRAccessKey accessKeyNew = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_WRITE);
         MCRAccessKeyManager.updateAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, accessKeyNew);
-        final MCRAccessKey accessKeyUpdated = MCRAccessKeyManager.getAccessKeys(MCRObjectID.getInstance(MCR_OBJECT_ID)).get(0);
+        final MCRAccessKey accessKeyUpdated = 
+            MCRAccessKeyManager.getAccessKeys(MCRObjectID.getInstance(MCR_OBJECT_ID)).get(0);
         assertEquals(accessKeyNew.getType(), accessKeyUpdated.getType());
     }
 
     @Test
     public void testDeleteKey() throws MCRAccessException {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         MCRAccessKeyManager.addAccessKey(accessKey);
         MCRAccessKeyManager.deleteAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY);
         assertFalse(MCRAccessKeyManager.getAccessKeys(MCRObjectID.getInstance(MCR_OBJECT_ID)).size() > 0);

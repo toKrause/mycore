@@ -29,21 +29,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import org.junit.Test;
 
-import org.mycore.access.MCRAccessException;
 import org.mycore.access.MCRAccessManager;
 import org.mycore.common.MCRTestCase;
-import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.mcr.acl.accesskey.backend.MCRAccessKey;
-
-import org.xml.sax.SAXParseException;
 
 public class MCRAccessKeyTransformerTest extends MCRTestCase {
 
@@ -61,7 +56,8 @@ public class MCRAccessKeyTransformerTest extends MCRTestCase {
     }
 
     public void testAccessKeysTransform() throws IOException {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         final List<MCRAccessKey> accessKeys = new ArrayList<MCRAccessKey>();
         accessKeys.add(accessKey);
         final String json = MCRAccessKeyTransformer.jsonFromAccessKeys(accessKeys);
@@ -75,8 +71,10 @@ public class MCRAccessKeyTransformerTest extends MCRTestCase {
 
     @Test
     public void testServFlagTransform() throws IOException {
-        final MCRAccessKey accessKeyRead = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
-        final MCRAccessKey accessKeyWrite = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY, MCRAccessManager.PERMISSION_WRITE);
+        final MCRAccessKey accessKeyRead = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKeyWrite = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), WRITE_KEY, MCRAccessManager.PERMISSION_WRITE);
         final List<MCRAccessKey> accessKeys = new ArrayList<MCRAccessKey>();
         accessKeys.add(accessKeyRead);
         accessKeys.add(accessKeyWrite);
@@ -95,7 +93,8 @@ public class MCRAccessKeyTransformerTest extends MCRTestCase {
     public void testServiceTransform() throws IOException {
         final Element service = new Element("service");
         final Element servFlags = new Element("servflags");
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         final List<MCRAccessKey> accessKeys = new ArrayList<MCRAccessKey>();
         accessKeys.add(accessKey);
         final Element servFlag = MCRAccessKeyTransformer.servFlagFromAccessKeys(accessKeys);

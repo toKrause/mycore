@@ -45,7 +45,8 @@ public class MCRAccessKeyTest extends MCRTestCase {
 
     @Test
     public void testKey() {
-        final MCRAccessKey accessKey = new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
+        final MCRAccessKey accessKey = 
+            new MCRAccessKey(MCRObjectID.getInstance(MCR_OBJECT_ID), READ_KEY, MCRAccessManager.PERMISSION_READ);
         assertEquals(MCR_OBJECT_ID, accessKey.getObjectId().toString());
         assertEquals(READ_KEY, accessKey.getValue());
         assertEquals(MCRAccessManager.PERMISSION_READ, accessKey.getType());
