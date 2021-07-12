@@ -22,8 +22,14 @@ package org.mycore.mcr.acl.accesskey.exception;
 
 import org.mycore.common.MCRException;
 
+/**
+ * Instances of this class represent a general exception related to access keys.
+ */
 public class MCRAccessKeyException extends MCRException {
 
+    /**
+     * Reference for error messages for i18n.
+    */
     private String errorCode;
 
     public MCRAccessKeyException(String errorMessage) {

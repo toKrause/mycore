@@ -20,6 +20,10 @@
 
 package org.mycore.mcr.acl.accesskey.exception;
 
+/**
+ * Exception that refers to a collision of access keys.
+ * This refers to value duplicates.
+ */
 public class MCRAccessKeyCollisionException extends MCRAccessKeyException {
     public MCRAccessKeyCollisionException(String errorMessage) {
         super(errorMessage, "collision");

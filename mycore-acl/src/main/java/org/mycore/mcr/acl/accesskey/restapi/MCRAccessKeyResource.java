@@ -18,7 +18,7 @@
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307 USA
  */
 
-package org.mycore.mcr.acl.accesskey.frontend.resource;
+package org.mycore.mcr.acl.accesskey.restapi;
 
 import static org.mycore.restapi.v2.MCRRestAuthorizationFilter.PARAM_MCRID;
 
@@ -45,8 +45,8 @@ import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.mcr.acl.accesskey.MCRAccessKeyManager;
 import org.mycore.mcr.acl.accesskey.MCRAccessKeyTransformer;
 import org.mycore.mcr.acl.accesskey.backend.MCRAccessKey;
-import org.mycore.mcr.acl.accesskey.frontend.resource.annotation.MCRRequireAccessKeyAuthorization;
-import org.mycore.mcr.acl.accesskey.frontend.resource.model.MCRAccessKeyInformation;
+import org.mycore.mcr.acl.accesskey.restapi.annotation.MCRRequireAccessKeyAuthorization;
+import org.mycore.mcr.acl.accesskey.restapi.model.MCRAccessKeyInformation;
 import org.mycore.restapi.annotations.MCRRequireTransaction;
 
 @Path("/accesskeys")

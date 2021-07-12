@@ -160,7 +160,7 @@ public final class MCRAccessKeyManager {
             LOGGER.warn("Key does not exists.");
             throw new MCRAccessKeyNotFoundException("Key does not exists.");
         } else {
-            removeAccessKey(accessKey);
+            deleteAccessKey(accessKey);
         }
     }
 
@@ -169,7 +169,7 @@ public final class MCRAccessKeyManager {
      *
      * @param accessKey the {@link MCRAccessKey}
      */
-    public static void removeAccessKey(final MCRAccessKey accessKey) {
+    public static void deleteAccessKey(final MCRAccessKey accessKey) {
         final EntityManager em = MCREntityManagerProvider.getCurrentEntityManager();
         em.remove(accessKey);
         MCRAccessManager.invalidPermissionCache(accessKey.getObjectId().toString(), accessKey.getType());

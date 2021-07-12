@@ -33,9 +33,13 @@ import org.mycore.mcr.acl.accesskey.backend.MCRAccessKey;
 import org.mycore.datamodel.metadata.MCRObjectID;
 
 /**
- * Returns a JSON-String with {@link MCRAccessKey} for an given {@link MCRObjectID}.
+ * Returns a JSON-String as servflag with {@link MCRAccessKey} for an given {@link MCRObjectID}.
+ * <p>Syntax:</p>
+ * <ul>
+ * <li><code>accesskey:{mcrObjectId}</code> to resolve a servflag</li>
+ * </ul>
  */
-public class MCRAccessKeyResolver implements URIResolver {
+public class MCRAccessKeyURIResolver implements URIResolver {
     
     /* (non-Javadoc)
      * @see javax.xml.transform.URIResolver#resolve(java.lang.String, java.lang.String)

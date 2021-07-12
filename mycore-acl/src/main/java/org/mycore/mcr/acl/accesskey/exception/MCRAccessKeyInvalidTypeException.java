@@ -20,6 +20,9 @@
 
 package org.mycore.mcr.acl.accesskey.exception;
 
+/**
+ * Exception that refers to an invalid permission type.
+ */
 public class MCRAccessKeyInvalidTypeException extends MCRAccessKeyException {
     public MCRAccessKeyInvalidTypeException(String errorMessage) {
         super(errorMessage, "invalidType");

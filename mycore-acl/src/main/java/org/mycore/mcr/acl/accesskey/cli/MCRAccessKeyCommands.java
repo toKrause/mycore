@@ -41,7 +41,7 @@ public class MCRAccessKeyCommands {
         LOGGER.info("cleared all access keys");
     }
 
-    @MCRCommand(syntax = "clear access keys of {0}",
+    @MCRCommand(syntax = "clear all access keys of id {0}",
         help = "Deletes all access keys of given MCRObject/Derivate")
     public static void clearAccessKeys(String objId) throws Exception {
         final MCRObjectID objectId = MCRObjectID.getInstance(objId);

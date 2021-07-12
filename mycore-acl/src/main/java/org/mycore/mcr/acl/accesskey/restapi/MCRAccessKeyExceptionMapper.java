@@ -16,7 +16,7 @@
  * along with MyCoRe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.mycore.mcr.acl.accesskey.frontend.resource;
+package org.mycore.mcr.acl.accesskey.restapi;
 
 import java.util.Optional;
 

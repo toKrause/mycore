@@ -18,7 +18,7 @@
  * 59 Temple Place - Suite 330, Boston, MA  02111-1307 USA
  */
 
-package org.mycore.mcr.acl.accesskey.frontend.resource.model;
+package org.mycore.mcr.acl.accesskey.restapi.model;
 
 import java.util.List;
 

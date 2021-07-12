@@ -59,6 +59,12 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
         return false;
     }
 
+    /**
+     * Checks the access with a {@link MCRAccessKey}.
+     *
+     * @param permission permission type
+     * @param accessKey the {@link MCRAccessKey}
+     */
     private boolean checkPermission(String permission, MCRAccessKey accessKey) {
         if ((permission.equals(MCRAccessManager.PERMISSION_READ) 
             && accessKey.getType().equals(MCRAccessManager.PERMISSION_READ)) 
@@ -70,6 +76,13 @@ public class MCRAccessKeyStrategy implements MCRAccessCheckStrategy {
         return false;
     }
 
+    /**
+     * Checks the access with a {@link MCRAccessKey}.
+     *
+     * @param id of a {@link MCRObjectID}
+     * @param permission permission type
+     * @param accessKey the {@link MCRAccessKey}
+     */
     public boolean checkPermission(String id, String permission, MCRAccessKey accessKey) {
         LOGGER.debug("check object {} permission {}.", id, permission);
         if (MCRObjectID.isValid(id) && id.equals(accessKey.getObjectId().toString())) {
