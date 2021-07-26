@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 import org.mycore.common.MCRException;
 import org.mycore.common.MCRSession;

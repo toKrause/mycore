@@ -18,7 +18,7 @@
 
 package org.mycore.viewer.configuration;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.mycore.access.MCRAccessManager;
 import org.mycore.common.MCRSessionMgr;

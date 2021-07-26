@@ -20,11 +20,11 @@ package org.mycore.restapi;
 
 import java.io.IOException;
 
-import javax.annotation.Priority;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

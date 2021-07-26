@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
 
 import org.apache.logging.log4j.LogManager;
 import org.junit.After;

@@ -18,9 +18,9 @@
 
 package org.mycore.frontend.ws.common;
 
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.EndpointConfig;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.EndpointConfig;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

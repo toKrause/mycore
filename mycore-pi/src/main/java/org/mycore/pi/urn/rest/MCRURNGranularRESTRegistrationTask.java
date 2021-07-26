@@ -24,8 +24,8 @@ import java.util.TimerTask;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import javax.persistence.EntityTransaction;
-import javax.persistence.RollbackException;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.RollbackException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

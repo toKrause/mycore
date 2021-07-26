@@ -18,7 +18,7 @@
 
 package org.mycore.wcms2.access;
 
-import javax.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 import org.mycore.access.MCRAccessManager;
 import org.mycore.frontend.jersey.filter.access.MCRResourceAccessChecker;

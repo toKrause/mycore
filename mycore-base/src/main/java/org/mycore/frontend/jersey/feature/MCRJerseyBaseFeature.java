@@ -22,10 +22,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.core.Response;
 
 import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.frontend.jersey.MCRStaticContent;

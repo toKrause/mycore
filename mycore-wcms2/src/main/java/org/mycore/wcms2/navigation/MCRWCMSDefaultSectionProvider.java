@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

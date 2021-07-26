@@ -22,8 +22,8 @@ import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -30,8 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.mycore.datamodel.metadata.MCRObjectID;
 import org.mycore.datamodel.niofs.MCRContentTypes;

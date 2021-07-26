@@ -20,7 +20,7 @@ package org.mycore.orcid;
 
 import java.io.IOException;
 
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.WebTarget;
 
 import org.jdom2.JDOMException;
 import org.mycore.orcid.works.MCRWorksFetcher;

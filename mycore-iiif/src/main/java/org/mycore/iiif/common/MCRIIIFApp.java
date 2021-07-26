@@ -18,7 +18,7 @@
 
 package org.mycore.iiif.common;
 
-import javax.ws.rs.ApplicationPath;
+import jakarta.ws.rs.ApplicationPath;
 
 import org.apache.logging.log4j.LogManager;
 import org.mycore.common.config.MCRConfiguration2;

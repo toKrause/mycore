@@ -20,7 +20,7 @@ package org.mycore.frontend.servlets;
 
 import static org.mycore.access.MCRAccessManager.PERMISSION_WRITE;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;

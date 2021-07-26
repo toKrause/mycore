@@ -21,7 +21,7 @@ package org.mycore.pi.doi.crossref;
 import java.util.List;
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;

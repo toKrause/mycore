@@ -18,9 +18,9 @@
 
 package org.mycore.frontend.classeditor.listener;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.ws.rs.ext.Provider;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.ws.rs.ext.Provider;
 
 import org.mycore.common.MCRJSONManager;
 import org.mycore.frontend.classeditor.MCRCategoryIDTypeAdapter;

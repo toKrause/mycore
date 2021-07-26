@@ -20,7 +20,7 @@ package org.mycore.sword.manager;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.i18n.iri.IRI;
 import org.apache.logging.log4j.LogManager;

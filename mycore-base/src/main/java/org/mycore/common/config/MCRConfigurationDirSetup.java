@@ -32,18 +32,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.status.StatusLogger;
-import org.apache.logging.log4j.web.Log4jServletContainerInitializer;
 import org.mycore.common.MCRClassTools;
 import org.mycore.common.MCRSessionMgr;
 import org.mycore.common.events.MCRStartupHandler;
 import org.mycore.common.events.MCRStartupHandler.AutoExecutable;
 import org.mycore.common.log4j2.MCRSessionThreadContext;
+
+import jakarta.servlet.ServletContext;
 
 /**
  * Called by {@link MCRStartupHandler} on start up to setup {@link MCRConfiguration2}.
@@ -144,12 +142,13 @@ public class MCRConfigurationDirSetup implements AutoExecutable {
         final Map<String, String> deprecated = configurationLoader.loadDeprecated();
         MCRConfigurationBase.initialize(deprecated, properties, true);
         if (servletContext != null) {
-            Log4jServletContainerInitializer log4jInitializer = new Log4jServletContainerInitializer();
-            try {
-                log4jInitializer.onStartup(null, servletContext);
-            } catch (ServletException e) {
+            //TODO: requires https://issues.apache.org/jira/browse/LOG4J2-2978
+            //Log4jServletContainerInitializer log4jInitializer = new Log4jServletContainerInitializer();
+            //try {
+            //    log4jInitializer.onStartup(null, servletContext);
+            //} catch (ServletException e) {
                 System.err.println("Could not start Log4J2 context");
-            }
+                //}
         }
         String configFileKey = "log4j.configurationFile";
         URL log4j2ConfigURL = null;

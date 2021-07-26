@@ -20,8 +20,8 @@ package org.mycore.wcms2.datamodel;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 
 import org.jdom2.Element;
 import org.jdom2.output.Format;

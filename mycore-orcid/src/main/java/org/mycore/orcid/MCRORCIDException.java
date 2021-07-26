@@ -20,8 +20,8 @@ package org.mycore.orcid;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

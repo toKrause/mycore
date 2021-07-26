@@ -20,7 +20,7 @@ package org.mycore.sword.manager;
 
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.i18n.iri.IRI;

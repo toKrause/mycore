@@ -18,7 +18,7 @@
 
 package org.mycore.webtools.processing.socket;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 import org.mycore.common.processing.MCRProcessable;
 import org.mycore.common.processing.MCRProcessableCollection;

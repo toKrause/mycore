@@ -20,7 +20,7 @@ package org.mycore.frontend.classeditor.json;
 
 import java.util.ArrayList;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.mycore.datamodel.classifications2.MCRCategory;
 import org.mycore.datamodel.classifications2.MCRCategoryID;

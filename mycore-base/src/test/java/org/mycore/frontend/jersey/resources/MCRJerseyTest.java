@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.core.Application;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.servlet.ServletRegistration;

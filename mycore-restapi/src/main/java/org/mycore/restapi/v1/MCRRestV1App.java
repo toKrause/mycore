@@ -23,7 +23,7 @@ package org.mycore.restapi.v1;
 
 import java.util.stream.Stream;
 
-import javax.ws.rs.ApplicationPath;
+import jakarta.ws.rs.ApplicationPath;
 
 import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.frontend.jersey.resources.MCRJerseyExceptionMapper;

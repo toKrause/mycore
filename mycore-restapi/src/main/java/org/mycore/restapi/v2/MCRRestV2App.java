@@ -22,8 +22,8 @@ import java.net.URI;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.InternalServerErrorException;
 
 import org.mycore.common.MCRCoreVersion;
 import org.mycore.common.config.MCRConfiguration2;

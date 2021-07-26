@@ -20,7 +20,7 @@
 
 package org.mycore.mcr.cronjob;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.mycore.common.events.MCRStartupHandler;
 

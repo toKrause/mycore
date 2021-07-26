@@ -18,7 +18,7 @@
 
 package org.mycore.frontend.xeditor.target;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.jaxen.JaxenException;
 import org.jdom2.JDOMException;

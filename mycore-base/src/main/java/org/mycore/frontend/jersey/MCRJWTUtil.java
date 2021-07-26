@@ -28,8 +28,8 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Optional;
 
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.mycore.common.MCRSession;

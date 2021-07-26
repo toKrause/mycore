@@ -18,8 +18,8 @@
 
 package org.mycore.backend.jpa;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import org.mycore.datamodel.metadata.MCRObjectID;
 

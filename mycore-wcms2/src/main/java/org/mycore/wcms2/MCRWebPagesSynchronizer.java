@@ -29,7 +29,7 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.Locale;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.logging.log4j.LogManager;

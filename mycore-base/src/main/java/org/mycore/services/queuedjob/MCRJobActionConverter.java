@@ -17,9 +17,9 @@
  */
 package org.mycore.services.queuedjob;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import jakarta.persistence.PersistenceException;
 
 import org.mycore.common.MCRClassTools;
 

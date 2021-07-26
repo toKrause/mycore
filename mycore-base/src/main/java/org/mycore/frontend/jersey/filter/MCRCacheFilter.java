@@ -26,16 +26,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.Produces;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.ext.RuntimeDelegate;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.CacheControl;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +94,9 @@ public class MCRCacheFilter implements ContainerResponseFilter {
             if (responseContext.getHeaderString(HttpHeaders.AUTHORIZATION) == null) {
                 return;
             }
-            cc = CacheControl.valueOf(currentCacheControl);
+            cc = RuntimeDelegate.getInstance()
+                    .createHeaderDelegate(CacheControl.class)
+                    .fromString(currentCacheControl);
         } else {
             //from https://developer.mozilla.org/en-US/docs/Glossary/cacheable
             if (!requestContext.getMethod().equals(HttpMethod.GET)

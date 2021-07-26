@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.mycore.common.MCRJSONTypeAdapter;
 import org.mycore.datamodel.classifications2.MCRCategory;

@@ -20,8 +20,8 @@ package org.mycore.frontend.servlets;
 
 import java.net.InetAddress;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.mycore.common.config.MCRConfigurationException;
 import org.mycore.frontend.MCRFrontendUtil;

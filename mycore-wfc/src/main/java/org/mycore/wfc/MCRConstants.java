@@ -18,8 +18,8 @@
 
 package org.mycore.wfc;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.mycore.common.MCRException;
 import org.mycore.common.config.MCRConfiguration2;

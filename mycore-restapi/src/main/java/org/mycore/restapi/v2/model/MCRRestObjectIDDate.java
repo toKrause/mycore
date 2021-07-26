@@ -20,10 +20,10 @@ package org.mycore.restapi.v2.model;
 
 import java.time.Instant;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.mycore.datamodel.common.MCRObjectIDDate;
 import org.mycore.restapi.converter.MCRInstantXMLAdapter;

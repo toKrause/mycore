@@ -21,7 +21,7 @@ package org.mycore.wcms2.navigation;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.jdom2.Document;

@@ -20,8 +20,8 @@ package org.mycore.frontend.xeditor.target;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.servlet.ServletContext;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.servlet.ServletContext;
+import jakarta.xml.bind.DatatypeConverter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

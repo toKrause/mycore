@@ -25,7 +25,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.junit.Test;
 import org.mycore.backend.jpa.MCREntityManagerProvider;
