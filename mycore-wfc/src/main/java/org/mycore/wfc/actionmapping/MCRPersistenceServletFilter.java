@@ -45,7 +45,7 @@ public class MCRPersistenceServletFilter implements Filter {
     private static final Logger LOGGER = LogManager.getLogger(MCRPersistenceServletFilter.class);
 
     /* (non-Javadoc)
-     * @see javax.servlet.Filter#destroy()
+     * @see jakarta.servlet.Filter#destroy()
      */
     @Override
     public void destroy() {
@@ -120,7 +120,7 @@ public class MCRPersistenceServletFilter implements Filter {
     }
 
     /* (non-Javadoc)
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
      */
     @Override
     public void init(FilterConfig config) throws ServletException {

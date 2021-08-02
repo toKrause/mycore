@@ -43,7 +43,7 @@ public class MCRLogoutServlet extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(MCRLogoutServlet.class);
 
     /* (non-Javadoc)
-     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see jakarta.servlet.http.HttpServlet#doGet(jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -59,7 +59,7 @@ public class MCRUploadServletDeployer implements AutoExecutable {
     }
 
     /* (non-Javadoc)
-     * @see org.mycore.common.events.MCRStartupHandler.AutoExecutable#startUp(javax.servlet.ServletContext)
+     * @see org.mycore.common.events.MCRStartupHandler.AutoExecutable#startUp(jakarta.servlet.ServletContext)
      */
     @Override
     public void startUp(ServletContext servletContext) {

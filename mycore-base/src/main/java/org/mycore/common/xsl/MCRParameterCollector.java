@@ -309,7 +309,7 @@ public class MCRParameterCollector {
         StringBuilder buffer = getBaseURLUpToHostName();
 
         //when called by MCRErrorServlet
-        String errorURI = (String) request.getAttribute("javax.servlet.error.request_uri");
+        String errorURI = (String) request.getAttribute("jakarta.servlet.error.request_uri");
         buffer.append(errorURI != null ? errorURI : request.getRequestURI());
 
         String queryString = request.getQueryString();

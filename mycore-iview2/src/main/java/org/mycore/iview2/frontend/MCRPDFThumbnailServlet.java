@@ -51,8 +51,8 @@ public class MCRPDFThumbnailServlet extends MCRContentServlet {
     private MCRPDFTools pdfTools;
 
     /* (non-Javadoc)
-     * @see org.mycore.frontend.servlets.MCRContentServlet#getContent(javax.servlet.http.HttpServletRequest,
-      * javax.servlet.http.HttpServletResponse)
+     * @see org.mycore.frontend.servlets.MCRContentServlet#getContent(jakarta.servlet.http.HttpServletRequest,
+      * jakarta.servlet.http.HttpServletResponse)
      */
     @Override
     public MCRContent getContent(HttpServletRequest req, HttpServletResponse resp) throws IOException {

@@ -43,7 +43,7 @@ import se.jiderhamn.classloader.leak.prevention.ClassLoaderLeakPreventorFactory;
 public class MCRServletContainerInitializer implements ServletContainerInitializer {
 
     /* (non-Javadoc)
-     * @see javax.servlet.ServletContainerInitializer#onStartup(java.util.Set, javax.servlet.ServletContext)
+     * @see jakarta.servlet.ServletContainerInitializer#onStartup(java.util.Set, jakarta.servlet.ServletContext)
      */
     @Override
     public void onStartup(final Set<Class<?>> c, final ServletContext ctx) throws ServletException {

@@ -188,7 +188,7 @@ public class MCRMETSServlet extends MCRServlet {
      * (non-Javadoc)
      * 
      * @see
-     * org.mycore.frontend.servlets.MCRServlet#getLastModified(javax.servlet
+     * org.mycore.frontend.servlets.MCRServlet#getLastModified(jakarta.servlet
      * .http.HttpServletRequest)
      */
     @Override

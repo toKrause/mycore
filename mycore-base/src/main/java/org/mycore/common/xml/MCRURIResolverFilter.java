@@ -123,7 +123,7 @@ public class MCRURIResolverFilter implements Filter {
     /*
      * (non-Javadoc)
      * 
-     * @see javax.servlet.Filter#destroy()
+     * @see jakarta.servlet.Filter#destroy()
      */
     public void destroy() {
         // nothing to be done so far
@@ -133,7 +133,7 @@ public class MCRURIResolverFilter implements Filter {
     /*
      * (non-Javadoc)
      * 
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
      */
     public void init(FilterConfig arg0) throws ServletException {
         // no inititalization parameters required so far

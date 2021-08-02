@@ -66,7 +66,7 @@ public class MCRSecureTokenV2Filter implements Filter {
     private String sharedSecret;
 
     /* (non-Javadoc)
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+     * @see jakarta.servlet.Filter#init(jakarta.servlet.FilterConfig)
      */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
