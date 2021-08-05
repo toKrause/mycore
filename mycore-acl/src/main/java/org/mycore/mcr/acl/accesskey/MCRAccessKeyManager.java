@@ -20,6 +20,7 @@
 
 package org.mycore.mcr.acl.accesskey;
 
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -95,7 +96,7 @@ public final class MCRAccessKeyManager {
      */
     public static String encryptValue(final String value, final MCRObjectID objectId) throws MCRException {
         try {
-            return MCRUtils.asSHA256String(HASH_ITERATIONS, objectId.toString().getBytes(), value);
+            return MCRUtils.asSHA256String(HASH_ITERATIONS, objectId.toString().getBytes(StandardCharsets.UTF_8), value);
         } catch(NoSuchAlgorithmException e) {
             throw new MCRException("Encryption failed.");
         }
