@@ -96,7 +96,8 @@ public final class MCRAccessKeyManager {
      */
     public static String encryptValue(final String value, final MCRObjectID objectId) throws MCRException {
         try {
-            return MCRUtils.asSHA256String(HASH_ITERATIONS, objectId.toString().getBytes(StandardCharsets.UTF_8), value);
+            return MCRUtils.asSHA256String(HASH_ITERATIONS, objectId.toString().getBytes(StandardCharsets.UTF_8), 
+                value);
         } catch(NoSuchAlgorithmException e) {
             throw new MCRException("Encryption failed.");
         }
