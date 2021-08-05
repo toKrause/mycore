@@ -34,12 +34,12 @@ import org.mycore.common.MCRException;
 import org.mycore.common.MCRUtils;
 import org.mycore.common.config.MCRConfiguration2;
 import org.mycore.datamodel.metadata.MCRObjectID;
-import org.mycore.mcr.acl.accesskey.backend.jpa.MCRAccessKey;
 import org.mycore.mcr.acl.accesskey.exception.MCRAccessKeyCollisionException;
 import org.mycore.mcr.acl.accesskey.exception.MCRAccessKeyException;
 import org.mycore.mcr.acl.accesskey.exception.MCRAccessKeyInvalidTypeException;
 import org.mycore.mcr.acl.accesskey.exception.MCRAccessKeyInvalidValueException;
 import org.mycore.mcr.acl.accesskey.exception.MCRAccessKeyNotFoundException;
+import org.mycore.mcr.acl.accesskey.model.MCRAccessKey;
 
 /**
  * Methods to manage {@link MCRAccessKey}.
